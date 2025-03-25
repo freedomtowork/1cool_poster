@@ -27,21 +27,21 @@ const PosterPreview: React.FC<PosterPreviewProps> = ({
     let background;
     switch (style) {
       case 'minimal':
-        background = 'bg-gradient-to-br from-slate-100 to-gray-200';
+        background = 'from-blue-500 to-cyan-400';
         break;
       case 'vibrant':
-        background = 'bg-gradient-to-br from-blue-200 to-purple-200';
+        background = 'from-pink-500 to-purple-500';
         break;
       case 'elegant':
-        background = 'bg-gradient-to-br from-stone-100 to-amber-100';
+        background = 'from-amber-400 to-orange-400';
         break;
       case 'retro':
-        background = 'bg-gradient-to-br from-yellow-100 to-orange-100';
+        background = 'from-yellow-400 to-orange-500';
         break;
       default:
-        background = 'bg-gradient-to-br from-slate-100 to-gray-200';
+        background = 'from-blue-500 to-cyan-400';
     }
-    return background;
+    return `bg-gradient-to-br ${background}`;
   };
 
   // Get appropriate font style based on selected style
@@ -74,23 +74,23 @@ const PosterPreview: React.FC<PosterPreviewProps> = ({
 
   return (
     <div className="flex flex-col items-center">
-      <div className={`w-full max-w-md ${getAspectRatio()} rounded-xl overflow-hidden shadow-lg glass relative`}>
+      <div className={`w-full max-w-md ${getAspectRatio()} rounded-xl overflow-hidden shadow-lg relative`}>
         {loading ? (
-          <div className="absolute inset-0 flex items-center justify-center">
+          <div className="absolute inset-0 flex items-center justify-center bg-slate-900">
             <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
           </div>
         ) : (
           <div className={`absolute inset-0 ${generatePlaceholderImage()}`}>
             <div className="absolute inset-0 flex items-center justify-center p-6 md:p-8">
-              <div className={`text-center ${getFontStyle()}`}>
-                <p className={`${isMobile ? 'text-base' : 'text-lg md:text-xl'} break-words`}>
+              <div className={`text-center ${getFontStyle()} text-white`}>
+                <p className={`${isMobile ? 'text-base' : 'text-lg md:text-xl'} break-words drop-shadow-md`}>
                   {text || (language === 'zh' ? '在此输入您的文字' : 'Enter your text here')}
                 </p>
               </div>
             </div>
             
             {/* Watermark */}
-            <div className="absolute bottom-2 right-2 text-xs text-gray-500 opacity-70">
+            <div className="absolute bottom-2 right-2 text-xs text-white opacity-70">
               PosterAI
             </div>
           </div>
@@ -98,13 +98,13 @@ const PosterPreview: React.FC<PosterPreviewProps> = ({
       </div>
       
       <div className="flex items-center space-x-3 mt-4 animate-fade-in">
-        <Button variant="outline" size={isMobile ? "sm" : "default"} className="gap-1">
+        <Button variant="outline" size={isMobile ? "sm" : "default"} className="gap-1 bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700">
           <Download className={`${isMobile ? 'w-3 h-3' : 'w-4 h-4'}`} />
-          Download
+          下载
         </Button>
-        <Button variant="outline" size={isMobile ? "sm" : "default"} className="gap-1">
+        <Button variant="outline" size={isMobile ? "sm" : "default"} className="gap-1 bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700">
           <Share2 className={`${isMobile ? 'w-3 h-3' : 'w-4 h-4'}`} />
-          Share
+          分享
         </Button>
       </div>
     </div>

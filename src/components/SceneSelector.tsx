@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Check } from 'lucide-react';
 
 type Scene = {
   id: string;
@@ -24,7 +25,7 @@ const SceneSelector: React.FC<SceneSelectorProps> = ({
     if (selectedLanguage === 'zh') {
       return [
         { id: 'xiaohongshu', name: '小红书', description: '时尚生活分享平台', languageId: 'zh' },
-        { id: 'wechat', name: '微信公众号', description: '内容创作与推广', languageId: 'zh' },
+        { id: 'wechat', name: '微信', description: '内容创作与推广', languageId: 'zh' },
         { id: 'bilibili', name: 'B站', description: '视频内容创作', languageId: 'zh' },
       ];
     } else {
@@ -46,20 +47,27 @@ const SceneSelector: React.FC<SceneSelectorProps> = ({
 
   return (
     <div className="space-y-2 mb-6">
-      <label className="block text-sm font-medium mb-2">Select Platform</label>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <label className="block text-sm font-medium mb-2 text-slate-300">选择平台</label>
+      <div className="grid grid-cols-1 gap-3">
         {scenes.map((scene) => (
           <button
             key={scene.id}
             onClick={() => onSceneChange(scene.id)}
-            className={`glass text-left px-4 py-3 rounded-xl transition-all duration-300 ${
-              selectedScene === scene.id
-                ? 'border-primary/50 shadow-md'
-                : 'border-transparent hover:border-primary/30'
-            }`}
+            className={`text-left px-4 py-3 rounded-xl transition-all duration-300 relative 
+              ${selectedScene === scene.id
+                ? 'bg-slate-700/60 ring-1 ring-primary/50'
+                : 'bg-slate-800/60 hover:bg-slate-700/40'
+              }`}
           >
-            <div className="font-medium">{scene.name}</div>
-            <span className="text-sm text-muted-foreground">{scene.description}</span>
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="font-medium text-slate-200">{scene.name}</div>
+                <span className="text-sm text-slate-400">{scene.description}</span>
+              </div>
+              {selectedScene === scene.id && (
+                <Check size={16} className="text-primary" />
+              )}
+            </div>
           </button>
         ))}
       </div>

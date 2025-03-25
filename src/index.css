@@ -7,47 +7,6 @@
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
-    --foreground: 222.2 84% 4.9%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 221.2 83% 53.3%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83% 53.3%;
-
-    --radius: 0.75rem;
-
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-
-  .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
 
@@ -75,6 +34,10 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 224.3 76.3% 48%;
+    
+    --sidebar-width: 80px;
+    
+    --radius: 0.75rem;
   }
 }
 
@@ -90,11 +53,15 @@
 
 @layer utilities {
   .glass {
+    @apply bg-black/50 backdrop-blur-lg border border-white/10 shadow-lg;
+  }
+  
+  .glass-light {
     @apply bg-white/70 backdrop-blur-lg border border-white/20 shadow-lg;
   }
   
-  .glass-dark {
-    @apply bg-black/10 backdrop-blur-lg border border-white/10 shadow-lg;
+  .glass-card {
+    @apply bg-slate-800/70 backdrop-blur-lg border border-slate-700 shadow-lg;
   }
   
   .text-balance {
@@ -137,6 +104,67 @@ html {
 .grid-pattern {
   background-size: 40px 40px;
   background-image: 
-    linear-gradient(to right, rgba(0, 0, 0, 0.02) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
+    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+}
+
+/* Sidebar styles */
+.sidebar {
+  width: var(--sidebar-width);
+  @apply fixed left-0 top-0 bottom-0 bg-slate-900 border-r border-slate-800 z-40;
+}
+
+.sidebar-item {
+  @apply flex flex-col items-center justify-center py-4 text-xs text-slate-400 hover:text-white transition-colors;
+}
+
+.sidebar-item.active {
+  @apply text-primary;
+}
+
+.sidebar-icon {
+  @apply mb-1 p-2 rounded-lg bg-slate-800 text-slate-400;
+}
+
+.sidebar-item.active .sidebar-icon {
+  @apply bg-slate-700 text-primary;
+}
+
+/* Editor area */
+.editor-area {
+  @apply ml-[var(--sidebar-width)] flex-1 min-h-screen bg-slate-950;
+}
+
+.template-item {
+  @apply relative overflow-hidden rounded-xl border border-slate-700 bg-slate-800 hover:border-primary/50 transition-all duration-200;
+}
+
+.template-item img {
+  @apply object-cover w-full h-full;
+}
+
+.editor-toolbar {
+  @apply fixed top-0 left-[var(--sidebar-width)] right-0 px-4 py-2 bg-slate-900 border-b border-slate-800 flex items-center justify-between z-30;
+}
+
+.editor-content {
+  @apply pt-14 px-4 pb-4;
+}
+
+/* Controls */
+.control-panel {
+  @apply fixed top-14 right-0 w-64 h-[calc(100vh-3.5rem)] bg-slate-900 border-l border-slate-800 flex flex-col overflow-y-auto z-20;
+}
+
+.control-section {
+  @apply p-4 border-b border-slate-800;
+}
+
+.control-label {
+  @apply text-xs text-slate-400 mb-2;
+}
+
+/* Styling for poster templates */
+.template-grid {
+  @apply grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4;
 }

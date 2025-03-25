@@ -2,6 +2,7 @@
 import React from 'react';
 import { Download, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useIsMobile } from '../hooks/use-mobile';
 
 type PosterPreviewProps = {
   language: string;
@@ -18,6 +19,8 @@ const PosterPreview: React.FC<PosterPreviewProps> = ({
   text,
   loading = false,
 }) => {
+  const isMobile = useIsMobile();
+
   // Generate a placeholder image based on the parameters
   const generatePlaceholderImage = () => {
     // For now, create a simple gradient background based on style
@@ -57,18 +60,30 @@ const PosterPreview: React.FC<PosterPreviewProps> = ({
     }
   };
 
+  // Determine aspect ratio based on scene
+  const getAspectRatio = () => {
+    if (scene === 'instagram' || scene === 'xiaohongshu') {
+      return 'aspect-square'; // 1:1
+    } else if (scene === 'twitter' || scene === 'facebook') {
+      return isMobile ? 'aspect-[4/3]' : 'aspect-[16/9]'; // 16:9 or 4:3 on mobile
+    } else if (scene === 'wechat') {
+      return 'aspect-[3/4]'; // 3:4
+    }
+    return 'aspect-[4/3]'; // Default
+  };
+
   return (
     <div className="flex flex-col items-center">
-      <div className="w-full max-w-md aspect-[4/3] rounded-xl overflow-hidden shadow-lg glass relative">
+      <div className={`w-full max-w-md ${getAspectRatio()} rounded-xl overflow-hidden shadow-lg glass relative`}>
         {loading ? (
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
           </div>
         ) : (
           <div className={`absolute inset-0 ${generatePlaceholderImage()}`}>
-            <div className="absolute inset-0 flex items-center justify-center p-8">
+            <div className="absolute inset-0 flex items-center justify-center p-6 md:p-8">
               <div className={`text-center ${getFontStyle()}`}>
-                <p className="text-lg md:text-xl break-words">
+                <p className={`${isMobile ? 'text-base' : 'text-lg md:text-xl'} break-words`}>
                   {text || (language === 'zh' ? '在此输入您的文字' : 'Enter your text here')}
                 </p>
               </div>
@@ -82,13 +97,13 @@ const PosterPreview: React.FC<PosterPreviewProps> = ({
         )}
       </div>
       
-      <div className="flex items-center space-x-3 mt-5 animate-fade-in">
-        <Button variant="outline" size="sm" className="gap-1">
-          <Download className="w-4 h-4" />
+      <div className="flex items-center space-x-3 mt-4 animate-fade-in">
+        <Button variant="outline" size={isMobile ? "sm" : "default"} className="gap-1">
+          <Download className={`${isMobile ? 'w-3 h-3' : 'w-4 h-4'}`} />
           Download
         </Button>
-        <Button variant="outline" size="sm" className="gap-1">
-          <Share2 className="w-4 h-4" />
+        <Button variant="outline" size={isMobile ? "sm" : "default"} className="gap-1">
+          <Share2 className={`${isMobile ? 'w-3 h-3' : 'w-4 h-4'}`} />
           Share
         </Button>
       </div>

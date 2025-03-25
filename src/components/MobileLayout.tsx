@@ -4,12 +4,13 @@ import {
   Home, 
   Image, 
   User, 
-  Settings, 
+  DollarSign,
   Menu 
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useIsMobile } from '../hooks/use-mobile';
 import Navbar from './Navbar';
+import { Link } from 'react-router-dom';
 
 interface MobileLayoutProps {
   children: React.ReactNode;
@@ -30,15 +31,20 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
       
       {/* Mobile Bottom Navigation Bar */}
       <nav className="fixed bottom-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-md border-t border-gray-200 flex items-center justify-around z-50">
-        <a href="/" className="flex flex-col items-center justify-center text-primary">
+        <Link to="/" className="flex flex-col items-center justify-center text-primary">
           <Home size={24} />
           <span className="text-xs mt-1">Home</span>
-        </a>
+        </Link>
         
         <a href="#generator" className="flex flex-col items-center justify-center">
           <Image size={24} />
           <span className="text-xs mt-1">Create</span>
         </a>
+        
+        <Link to="/pricing" className="flex flex-col items-center justify-center">
+          <DollarSign size={24} />
+          <span className="text-xs mt-1">Pricing</span>
+        </Link>
         
         <Sheet>
           <SheetTrigger asChild>
@@ -51,18 +57,18 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
             <div className="py-6">
               <h2 className="text-xl font-semibold mb-4">Menu</h2>
               <nav className="space-y-4">
-                <a href="#features" className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-secondary">
+                <Link to="/" className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-secondary">
                   <Home size={20} />
-                  <span>Features</span>
-                </a>
+                  <span>Home</span>
+                </Link>
                 <a href="#generator" className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-secondary">
                   <Image size={20} />
                   <span>Create Poster</span>
                 </a>
-                <a href="#pricing" className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-secondary">
-                  <Settings size={20} />
+                <Link to="/pricing" className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-secondary">
+                  <DollarSign size={20} />
                   <span>Pricing</span>
-                </a>
+                </Link>
                 <div className="border-t my-4"></div>
                 <a href="#" className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-secondary">
                   <User size={20} />
@@ -72,11 +78,6 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
             </div>
           </SheetContent>
         </Sheet>
-        
-        <a href="#pricing" className="flex flex-col items-center justify-center">
-          <Settings size={24} />
-          <span className="text-xs mt-1">Pricing</span>
-        </a>
         
         <a href="#" className="flex flex-col items-center justify-center">
           <User size={24} />

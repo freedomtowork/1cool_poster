@@ -11,12 +11,12 @@ import {
   CollapsibleContent,
   CollapsibleTrigger
 } from "@/components/ui/collapsible";
-import { ChevronDown, ChevronUp, Save, Undo, Redo, Copy } from 'lucide-react';
+import { ChevronDown, ChevronUp, Save, Undo, Redo, Copy, Globe } from 'lucide-react';
 
 const PosterGenerator = () => {
   const [language, setLanguage] = useState('zh');
   const [scene, setScene] = useState('xiaohongshu');
-  const [style, setStyle] = useState('info_card');
+  const [style, setStyle] = useState('tech_card');
   const [text, setText] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [openSection, setOpenSection] = useState<string | null>('text');
@@ -48,8 +48,8 @@ const PosterGenerator = () => {
   };
 
   const placeholderText = language === 'zh' 
-    ? '在此输入您的文字内容，AI将为您生成精美海报...' 
-    : 'Enter your text here, and our AI will generate a beautiful poster...';
+    ? '在此输入您的文字内容，描述您想展示的信息，AI将为您生成精美海报...' 
+    : 'Enter your text here, describe the information you want to showcase, and our AI will generate a beautiful poster...';
 
   const toggleSection = (section: string) => {
     setOpenSection(openSection === section ? null : section);
@@ -60,6 +60,19 @@ const PosterGenerator = () => {
       {/* Left side - Editor Panel */}
       <div className={`${isMobile ? 'w-full' : 'w-1/3'} bg-slate-900 p-4 overflow-y-auto`}>
         <div className="max-w-md mx-auto space-y-6">
+          {/* Language Toggle */}
+          <div className="flex justify-end mb-2">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => handleLanguageChange(language === 'zh' ? 'en' : 'zh')}
+              className="text-slate-300 hover:text-white"
+            >
+              <Globe size={16} className="mr-1" />
+              {language === 'zh' ? 'English' : '中文'}
+            </Button>
+          </div>
+          
           {/* Text Input - First */}
           <div className="glass-card rounded-xl p-4 md:p-6">
             <h3 className="text-lg font-medium mb-4 text-slate-200">

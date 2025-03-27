@@ -20,7 +20,7 @@ const PosterGenerator = () => {
   const [style, setStyle] = useState('minimal');
   const [text, setText] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
-  const [openSection, setOpenSection] = useState<string | null>('style');
+  const [openSection, setOpenSection] = useState<string | null>('text');
   const isMobile = useIsMobile();
 
   const handleGenerate = () => {
@@ -46,7 +46,6 @@ const PosterGenerator = () => {
     } else {
       setScene('twitter');
     }
-    setOpenSection('scene');
   };
 
   const placeholderText = language === 'zh' 
@@ -58,180 +57,68 @@ const PosterGenerator = () => {
   };
 
   return (
-    <div className={!isMobile ? 'flex flex-row' : ''}>
-      {/* Editor Toolbar */}
-      {!isMobile && (
-        <div className="editor-toolbar">
-          <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="icon" className="text-slate-400 hover:text-white">
-              <Undo size={16} />
-            </Button>
-            <Button variant="ghost" size="icon" className="text-slate-400 hover:text-white">
-              <Redo size={16} />
-            </Button>
-            <Button variant="ghost" size="icon" className="text-slate-400 hover:text-white">
-              <Copy size={16} />
-            </Button>
+    <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} h-full`}>
+      {/* Left side - Editor Panel */}
+      <div className={`${isMobile ? 'w-full' : 'w-1/3'} bg-slate-900 p-4 overflow-y-auto`}>
+        <div className="max-w-md mx-auto space-y-6">
+          {/* Text Input - First */}
+          <div className="glass-card rounded-xl p-4 md:p-6">
+            <h3 className="text-lg font-medium mb-4 text-slate-200">
+              {language === 'zh' ? '输入文字' : 'Enter Text'}
+            </h3>
+            <Textarea 
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              placeholder={placeholderText}
+              className="min-h-[100px] mb-4 bg-slate-800 border-slate-700 text-slate-200 placeholder:text-slate-500"
+            />
           </div>
-          <div>
-            <Button variant="default" size="sm" className="gap-1 bg-teal-500 hover:bg-teal-600 text-white">
-              <Save size={16} />
-              保存样式
-            </Button>
+          
+          {/* Style Selector - Second */}
+          <div className="glass-card rounded-xl p-4 md:p-6">
+            <h3 className="text-lg font-medium mb-4 text-slate-200">
+              {language === 'zh' ? '选择风格' : 'Choose Style'}
+            </h3>
+            <StyleSelector 
+              selectedStyle={style} 
+              onStyleChange={setStyle} 
+            />
           </div>
+          
+          {/* Scene/Platform Selector - Third */}
+          <div className="glass-card rounded-xl p-4 md:p-6">
+            <h3 className="text-lg font-medium mb-4 text-slate-200">
+              {language === 'zh' ? '选择平台' : 'Choose Platform'}
+            </h3>
+            <SceneSelector 
+              selectedScene={scene} 
+              selectedLanguage={language} 
+              onSceneChange={setScene} 
+            />
+          </div>
+          
+          {/* Generate Button */}
+          <Button 
+            onClick={handleGenerate} 
+            disabled={isGenerating} 
+            className="w-full mt-4 bg-cyan-500 hover:bg-cyan-600 text-white"
+          >
+            {isGenerating 
+              ? (language === 'zh' ? '生成中...' : 'Generating...') 
+              : (language === 'zh' ? '生成海报' : 'Generate Poster')}
+          </Button>
         </div>
-      )}
-
-      {/* Main content */}
-      <div className={`${!isMobile ? 'editor-content' : 'pt-16 pb-4 px-4'} flex-1`}>
-        <div className="max-w-4xl mx-auto">
-          {isMobile ? (
-            <div className="flex flex-col gap-6 max-w-md mx-auto">
-              <div className="glass-card rounded-xl p-4 md:p-6">
-                <Collapsible 
-                  open={openSection === 'language'} 
-                  onOpenChange={() => toggleSection('language')}
-                  className="mb-4"
-                >
-                  <CollapsibleTrigger className="flex justify-between items-center w-full py-2 text-left font-medium text-slate-200">
-                    <span>语言</span>
-                    {openSection === 'language' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                  </CollapsibleTrigger>
-                  <CollapsibleContent className="pt-2">
-                    <LanguageSelector 
-                      selectedLanguage={language} 
-                      onLanguageChange={handleLanguageChange} 
-                    />
-                  </CollapsibleContent>
-                </Collapsible>
-                
-                <Collapsible 
-                  open={openSection === 'scene'} 
-                  onOpenChange={() => toggleSection('scene')}
-                  className="mb-4"
-                >
-                  <CollapsibleTrigger className="flex justify-between items-center w-full py-2 text-left font-medium text-slate-200">
-                    <span>平台</span>
-                    {openSection === 'scene' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                  </CollapsibleTrigger>
-                  <CollapsibleContent className="pt-2">
-                    <SceneSelector 
-                      selectedScene={scene} 
-                      selectedLanguage={language} 
-                      onSceneChange={(newScene) => {
-                        setScene(newScene);
-                        setOpenSection('style');
-                      }} 
-                    />
-                  </CollapsibleContent>
-                </Collapsible>
-                
-                <Collapsible 
-                  open={openSection === 'style'} 
-                  onOpenChange={() => toggleSection('style')}
-                  className="mb-4"
-                >
-                  <CollapsibleTrigger className="flex justify-between items-center w-full py-2 text-left font-medium text-slate-200">
-                    <span>样式</span>
-                    {openSection === 'style' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                  </CollapsibleTrigger>
-                  <CollapsibleContent className="pt-2">
-                    <StyleSelector 
-                      selectedStyle={style} 
-                      onStyleChange={(newStyle) => {
-                        setStyle(newStyle);
-                        setOpenSection('text');
-                      }} 
-                    />
-                  </CollapsibleContent>
-                </Collapsible>
-                
-                <Collapsible 
-                  open={openSection === 'text'} 
-                  onOpenChange={() => toggleSection('text')}
-                  className="mb-4"
-                >
-                  <CollapsibleTrigger className="flex justify-between items-center w-full py-2 text-left font-medium text-slate-200">
-                    <span>输入文字</span>
-                    {openSection === 'text' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                  </CollapsibleTrigger>
-                  <CollapsibleContent className="pt-2">
-                    <Textarea 
-                      value={text}
-                      onChange={(e) => setText(e.target.value)}
-                      placeholder={placeholderText}
-                      className="min-h-[100px] mb-4 bg-slate-800 border-slate-700 text-slate-200 placeholder:text-slate-500"
-                    />
-                  </CollapsibleContent>
-                </Collapsible>
-                
-                <Button 
-                  onClick={handleGenerate} 
-                  disabled={isGenerating} 
-                  className="w-full mt-2 bg-cyan-500 hover:bg-cyan-600 text-white"
-                >
-                  {isGenerating ? '生成中...' : '生成海报'}
-                </Button>
-              </div>
-              
-              <div className="flex justify-center mt-4">
-                <PosterPreview 
-                  language={language}
-                  scene={scene}
-                  style={style}
-                  text={text}
-                  loading={isGenerating}
-                />
-              </div>
-            </div>
-          ) : (
-            <div className="flex items-start justify-center space-x-8">
-              <PosterPreview 
-                language={language}
-                scene={scene}
-                style={style}
-                text={text}
-                loading={isGenerating}
-              />
-              
-              <div className="glass-card rounded-xl p-6 w-1/3">
-                <LanguageSelector 
-                  selectedLanguage={language} 
-                  onLanguageChange={handleLanguageChange} 
-                />
-                
-                <SceneSelector 
-                  selectedScene={scene} 
-                  selectedLanguage={language} 
-                  onSceneChange={setScene} 
-                />
-                
-                <StyleSelector 
-                  selectedStyle={style} 
-                  onStyleChange={setStyle} 
-                />
-                
-                <div className="mb-6">
-                  <label className="block text-sm font-medium mb-2 text-slate-300">输入文字</label>
-                  <Textarea 
-                    value={text}
-                    onChange={(e) => setText(e.target.value)}
-                    placeholder={placeholderText}
-                    className="min-h-[120px] bg-slate-800 border-slate-700 text-slate-200 placeholder:text-slate-500"
-                  />
-                </div>
-                
-                <Button 
-                  onClick={handleGenerate} 
-                  disabled={isGenerating} 
-                  className="w-full bg-cyan-500 hover:bg-cyan-600 text-white"
-                >
-                  {isGenerating ? '生成中...' : '生成海报'}
-                </Button>
-              </div>
-            </div>
-          )}
-        </div>
+      </div>
+      
+      {/* Right side - Canvas/Preview */}
+      <div className={`${isMobile ? 'w-full mt-6' : 'w-2/3'} flex items-center justify-center p-4 bg-slate-950`}>
+        <PosterPreview 
+          language={language}
+          scene={scene}
+          style={style}
+          text={text}
+          loading={isGenerating}
+        />
       </div>
     </div>
   );

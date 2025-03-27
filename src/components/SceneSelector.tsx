@@ -46,8 +46,7 @@ const SceneSelector: React.FC<SceneSelectorProps> = ({
   }, [selectedLanguage, selectedScene, scenes, onSceneChange]);
 
   return (
-    <div className="space-y-2 mb-6">
-      <label className="block text-sm font-medium mb-2 text-slate-300">选择平台</label>
+    <div className="space-y-2">
       <div className="grid grid-cols-1 gap-3">
         {scenes.map((scene) => (
           <button

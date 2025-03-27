@@ -49,9 +49,8 @@ const StyleSelector: React.FC<StyleSelectorProps> = ({
   ];
 
   return (
-    <div className="space-y-2 mb-4 md:mb-6">
-      {!isMobile && <label className="block text-sm font-medium mb-2 text-slate-300">选择样式</label>}
-      <div className={`grid ${isMobile ? 'grid-cols-2 gap-2' : 'grid-cols-2 gap-3'}`}>
+    <div className="space-y-2">
+      <div className={`grid grid-cols-2 gap-3`}>
         {styles.map((style) => (
           <button
             key={style.id}
@@ -64,7 +63,7 @@ const StyleSelector: React.FC<StyleSelectorProps> = ({
           >
             <div className={`absolute inset-0 ${style.background} opacity-70`}></div>
             <div className="relative z-10 text-white">
-              <div className={`font-medium ${isMobile ? 'text-sm' : ''}`}>
+              <div className="font-medium">
                 {selectedStyle === style.id && (
                   <div className="absolute -right-1 -top-1 bg-primary rounded-full p-0.5">
                     <Check size={12} />

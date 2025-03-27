@@ -86,4 +86,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
-export { LanguageContext };
+// Removed the duplicate export of LanguageContext here

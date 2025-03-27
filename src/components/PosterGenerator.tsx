@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import LanguageSelector from './LanguageSelector';
 import SceneSelector from './SceneSelector';
 import StyleSelector from './StyleSelector';
 import PosterPreview from './PosterPreview';
@@ -17,7 +16,7 @@ import { ChevronDown, ChevronUp, Save, Undo, Redo, Copy } from 'lucide-react';
 const PosterGenerator = () => {
   const [language, setLanguage] = useState('zh');
   const [scene, setScene] = useState('xiaohongshu');
-  const [style, setStyle] = useState('minimal');
+  const [style, setStyle] = useState('tech_card');
   const [text, setText] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [openSection, setOpenSection] = useState<string | null>('text');
@@ -81,7 +80,8 @@ const PosterGenerator = () => {
             </h3>
             <StyleSelector 
               selectedStyle={style} 
-              onStyleChange={setStyle} 
+              onStyleChange={setStyle}
+              language={language}
             />
           </div>
           

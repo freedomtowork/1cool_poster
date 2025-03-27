@@ -23,20 +23,38 @@ const PosterPreview: React.FC<PosterPreviewProps> = ({
 
   // Generate a placeholder image based on the parameters
   const generatePlaceholderImage = () => {
-    // For now, create a simple gradient background based on style
+    // Create a gradient background based on style
     let background;
     switch (style) {
-      case 'minimal':
-        background = 'from-blue-500 to-cyan-400';
+      case 'tech_card':
+        background = 'from-blue-400 to-cyan-300';
         break;
-      case 'vibrant':
-        background = 'from-pink-500 to-purple-500';
+      case 'business_info':
+        background = 'from-slate-600 to-slate-400';
         break;
-      case 'elegant':
-        background = 'from-amber-400 to-orange-400';
+      case 'fluid_tech':
+        background = 'from-blue-600 to-indigo-400';
         break;
-      case 'retro':
+      case 'minimalist_grid':
+        background = 'from-gray-200 to-gray-300';
+        break;
+      case 'digital_ticket':
+        background = 'from-purple-500 to-pink-400';
+        break;
+      case 'new_constructivist':
         background = 'from-yellow-400 to-orange-500';
+        break;
+      case 'luxury_nature':
+        background = 'from-emerald-400 to-green-600';
+        break;
+      case 'industrial_rebel':
+        background = 'from-stone-700 to-stone-500';
+        break;
+      case 'cute_knowledge':
+        background = 'from-pink-300 to-rose-200';
+        break;
+      case 'simple_business':
+        background = 'from-blue-500 to-blue-300';
         break;
       default:
         background = 'from-blue-500 to-cyan-400';
@@ -47,14 +65,26 @@ const PosterPreview: React.FC<PosterPreviewProps> = ({
   // Get appropriate font style based on selected style
   const getFontStyle = () => {
     switch (style) {
-      case 'minimal':
-        return 'font-light';
-      case 'vibrant':
-        return 'font-bold';
-      case 'elegant':
-        return 'font-medium italic';
-      case 'retro':
+      case 'tech_card':
+        return 'font-medium';
+      case 'business_info':
         return 'font-semibold';
+      case 'fluid_tech':
+        return 'font-bold';
+      case 'minimalist_grid':
+        return 'font-light';
+      case 'digital_ticket':
+        return 'font-medium';
+      case 'new_constructivist':
+        return 'font-extrabold';
+      case 'luxury_nature':
+        return 'font-medium italic';
+      case 'industrial_rebel':
+        return 'font-bold uppercase';
+      case 'cute_knowledge':
+        return 'font-semibold';
+      case 'simple_business':
+        return 'font-normal';
       default:
         return 'font-normal';
     }

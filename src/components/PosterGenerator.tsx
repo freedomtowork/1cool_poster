@@ -48,8 +48,8 @@ const PosterGenerator = () => {
   };
 
   const placeholderText = language === 'zh' 
-    ? '在此输入您的文字内容，描述您想展示的信息，AI将为您生成精美海报...' 
-    : 'Enter your text here, describe the information you want to showcase, and our AI will generate a beautiful poster...';
+    ? '请输入结构化文字内容，例如：\n\n主标题：[您的主标题]\n副标题：[您的副标题]\n标语：[您的标语]\n正文：[您的正文内容]\n账号：[您的账号名称]\n日期：[日期信息]\n\n您可以根据需要添加或删除以上元素。AI会根据您的输入生成精美海报。' 
+    : 'Please enter structured text content, such as:\n\nMain Title: [Your Main Title]\nSubtitle: [Your Subtitle]\nTagline: [Your Tagline]\nBody Text: [Your Body Content]\nAccount: [Your Account Name]\nDate: [Date Information]\n\nYou can add or remove the above elements as needed. The AI will generate a beautiful poster based on your input.';
 
   const toggleSection = (section: string) => {
     setOpenSection(openSection === section ? null : section);
@@ -82,8 +82,13 @@ const PosterGenerator = () => {
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder={placeholderText}
-              className="min-h-[100px] mb-4 bg-slate-800 border-slate-700 text-slate-200 placeholder:text-slate-500"
+              className="min-h-[150px] mb-4 bg-slate-800 border-slate-700 text-slate-200 placeholder:text-slate-500"
             />
+            <div className="text-xs text-slate-400 italic">
+              {language === 'zh' 
+                ? '提示：使用上述格式可让AI更好地理解您的内容结构' 
+                : 'Tip: Using the format above will help the AI better understand your content structure'}
+            </div>
           </div>
           
           {/* Style Selector - Second */}

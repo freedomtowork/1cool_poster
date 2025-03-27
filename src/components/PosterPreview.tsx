@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Download, Share2 } from 'lucide-react';
+import { Download, Share2, Star, Palette, Code, SquareCode, Infinity } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '../hooks/use-mobile';
 
@@ -21,73 +21,105 @@ const PosterPreview: React.FC<PosterPreviewProps> = ({
 }) => {
   const isMobile = useIsMobile();
 
-  // Generate a placeholder image based on the parameters
-  const generatePlaceholderImage = () => {
-    // Create a gradient background based on style
-    let background;
-    switch (style) {
-      case 'tech_card':
-        background = 'from-blue-400 to-cyan-300';
-        break;
-      case 'business_info':
-        background = 'from-slate-600 to-slate-400';
-        break;
-      case 'fluid_tech':
-        background = 'from-blue-600 to-indigo-400';
-        break;
-      case 'minimalist_grid':
-        background = 'from-gray-200 to-gray-300';
-        break;
-      case 'digital_ticket':
-        background = 'from-purple-500 to-pink-400';
-        break;
-      case 'new_constructivist':
-        background = 'from-yellow-400 to-orange-500';
-        break;
-      case 'luxury_nature':
-        background = 'from-emerald-400 to-green-600';
-        break;
-      case 'industrial_rebel':
-        background = 'from-stone-700 to-stone-500';
-        break;
-      case 'cute_knowledge':
-        background = 'from-pink-300 to-rose-200';
-        break;
-      case 'simple_business':
-        background = 'from-blue-500 to-blue-300';
-        break;
-      default:
-        background = 'from-blue-500 to-cyan-400';
-    }
-    return `bg-gradient-to-br ${background}`;
-  };
+  // Generate a design based on the style
+  const generateDesign = () => {
+    let design = {
+      background: '',
+      textColor: 'text-white',
+      fontStyle: 'font-medium',
+      layout: 'flex flex-col items-start justify-center',
+      accent: '',
+      title: language === 'zh' ? '还在用PPT?' : 'Still using PPT?',
+      subtitle: language === 'zh' ? 
+        '教你用Claude生成惊艳同事的文档可视化网页' : 
+        'Learn to create stunning document visualizations with Claude',
+      hasGrid: false,
+      hasAccent: false,
+      hasNumbers: false,
+      hasBorder: false,
+      cornerElements: false,
+      rightSide: true,
+    };
 
-  // Get appropriate font style based on selected style
-  const getFontStyle = () => {
     switch (style) {
-      case 'tech_card':
-        return 'font-medium';
-      case 'business_info':
-        return 'font-semibold';
-      case 'fluid_tech':
-        return 'font-bold';
-      case 'minimalist_grid':
-        return 'font-light';
-      case 'digital_ticket':
-        return 'font-medium';
-      case 'new_constructivist':
-        return 'font-extrabold';
-      case 'luxury_nature':
-        return 'font-medium italic';
-      case 'industrial_rebel':
-        return 'font-bold uppercase';
-      case 'cute_knowledge':
-        return 'font-semibold';
-      case 'simple_business':
-        return 'font-normal';
+      case 'info_card':
+        design.background = 'bg-blue-50';
+        design.textColor = 'text-blue-900';
+        design.fontStyle = 'font-medium';
+        design.layout = 'grid grid-cols-2 gap-4 p-8';
+        design.hasNumbers = true;
+        break;
+      case 'professional':
+        design.background = 'bg-gradient-to-br from-green-50 to-white';
+        design.textColor = 'text-green-800';
+        design.fontStyle = 'font-medium';
+        design.accent = 'border-l-4 border-green-400 pl-4';
+        design.hasAccent = true;
+        break;
+      case 'interactive':
+        design.background = 'bg-gradient-to-br from-yellow-50 to-white';
+        design.textColor = 'text-yellow-900';
+        design.fontStyle = 'font-medium';
+        design.hasAccent = true;
+        design.accent = 'border-b-2 border-yellow-400';
+        break;
+      case 'one_click':
+        design.background = 'bg-gradient-to-br from-purple-50 to-white';
+        design.textColor = 'text-purple-900';
+        design.fontStyle = 'font-medium';
+        design.layout = 'flex flex-col items-center justify-center text-center';
+        break;
+      case 'soft_pink':
+        design.background = 'bg-gradient-to-r from-pink-50 to-pink-100';
+        design.textColor = 'text-purple-800';
+        design.fontStyle = 'font-bold';
+        design.hasBorder = true;
+        design.accent = 'border border-dashed border-pink-300';
+        break;
+      case 'dark_contrast':
+        design.background = 'bg-black';
+        design.textColor = 'text-white';
+        design.fontStyle = 'font-extrabold';
+        design.accent = 'text-yellow-300';
+        design.hasAccent = true;
+        design.cornerElements = true;
+        break;
+      case 'minimalist':
+        design.background = 'bg-gray-100 bg-opacity-80 backdrop-blur-sm';
+        design.textColor = 'text-gray-800';
+        design.fontStyle = 'font-normal';
+        design.layout = 'flex flex-col items-start justify-center';
+        design.hasBorder = false;
+        break;
+      case 'grid_system':
+        design.background = 'bg-black';
+        design.textColor = 'text-white';
+        design.fontStyle = 'font-bold';
+        design.hasGrid = true;
+        design.hasAccent = true;
+        design.accent = 'text-red-500';
+        break;
+      case 'tech_blue':
+        design.background = 'bg-gradient-to-br from-blue-50 to-white';
+        design.textColor = 'text-blue-700';
+        design.fontStyle = 'font-bold';
+        design.hasAccent = true;
+        design.cornerElements = true;
+        break;
+      case 'green_nature':
+        design.background = 'bg-gradient-to-r from-green-800 to-green-900';
+        design.textColor = 'text-white';
+        design.fontStyle = 'font-medium';
+        design.layout = 'flex flex-col items-start justify-center';
+        design.hasAccent = true;
+        design.cornerElements = true;
+        break;
       default:
-        return 'font-normal';
+        design.background = 'bg-blue-50';
+        design.textColor = 'text-blue-900';
     }
+
+    return design;
   };
 
   // Determine aspect ratio based on scene
@@ -95,16 +127,19 @@ const PosterPreview: React.FC<PosterPreviewProps> = ({
     if (scene === 'instagram' || scene === 'xiaohongshu') {
       return 'aspect-square'; // 1:1
     } else if (scene === 'twitter' || scene === 'facebook') {
-      return isMobile ? 'aspect-[4/3]' : 'aspect-[16/9]'; // 16:9 or 4:3 on mobile
+      return 'aspect-[16/9]'; // 16:9
     } else if (scene === 'wechat') {
       return 'aspect-[3/4]'; // 3:4
+    } else if (scene === 'bilibili') {
+      return 'aspect-[16/10]'; // 16:10
     }
-    return 'aspect-[4/3]'; // Default
+    return 'aspect-[16/9]'; // Default
   };
 
+  const design = generateDesign();
   const downloadText = language === 'zh' ? '下载' : 'Download';
   const shareText = language === 'zh' ? '分享' : 'Share';
-  const placeholderText = language === 'zh' ? '在此输入您的文字' : 'Enter your text here';
+  const placeholderText = text || (language === 'zh' ? '在此输入您的文字' : 'Enter your text here');
 
   return (
     <div className="flex flex-col items-center w-full max-w-2xl">
@@ -114,13 +149,43 @@ const PosterPreview: React.FC<PosterPreviewProps> = ({
             <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
           </div>
         ) : (
-          <div className={`absolute inset-0 ${generatePlaceholderImage()}`}>
-            <div className="absolute inset-0 flex items-center justify-center p-6 md:p-8">
-              <div className={`text-center ${getFontStyle()} text-white`}>
-                <p className="text-xl md:text-2xl break-words drop-shadow-md">
-                  {text || placeholderText}
-                </p>
+          <div className={`absolute inset-0 ${design.background}`}>
+            {design.hasGrid && (
+              <div className="absolute inset-0 grid-pattern"></div>
+            )}
+            
+            <div className="absolute inset-0 flex p-6 md:p-8">
+              <div className={`w-${design.rightSide ? '3/5' : 'full'} h-full flex flex-col space-y-2`}>
+                <h1 className={`text-3xl sm:text-4xl md:text-5xl ${design.fontStyle} ${design.hasAccent ? design.accent : ''} ${design.textColor}`}>
+                  {design.title}
+                </h1>
+                
+                <div className={`text-lg sm:text-xl md:text-2xl ${design.fontStyle} ${design.textColor} opacity-90`}>
+                  {design.subtitle}
+                </div>
+                
+                <div className={`mt-4 text-base sm:text-lg ${design.textColor} opacity-80`}>
+                  {placeholderText}
+                </div>
+                
+                {design.cornerElements && (
+                  <>
+                    <div className="absolute top-4 right-4">
+                      <Code size={24} className={design.textColor} />
+                    </div>
+                    <div className="absolute bottom-4 right-4">
+                      <SquareCode size={24} className={design.textColor} />
+                    </div>
+                  </>
+                )}
               </div>
+              
+              {design.rightSide && (
+                <div className="w-2/5 flex flex-col items-center justify-center text-right space-y-4">
+                  <div className={`text-4xl md:text-5xl font-bold ${design.textColor}`}>文档</div>
+                  <div className={`text-4xl md:text-5xl font-bold ${design.textColor}`}>可视</div>
+                </div>
+              )}
             </div>
             
             {/* Watermark */}

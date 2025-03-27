@@ -16,7 +16,7 @@ import { ChevronDown, ChevronUp, Save, Undo, Redo, Copy } from 'lucide-react';
 const PosterGenerator = () => {
   const [language, setLanguage] = useState('zh');
   const [scene, setScene] = useState('xiaohongshu');
-  const [style, setStyle] = useState('tech_card');
+  const [style, setStyle] = useState('info_card');
   const [text, setText] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [openSection, setOpenSection] = useState<string | null>('text');

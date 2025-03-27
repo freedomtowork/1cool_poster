@@ -10,6 +10,9 @@ type Style = {
   description: string;
   englishDescription: string;
   background: string;
+  textColor: string;
+  accent?: string;
+  imageUrl?: string;
 };
 
 type StyleSelectorProps = {
@@ -27,84 +30,104 @@ const StyleSelector: React.FC<StyleSelectorProps> = ({
   
   const styles: Style[] = [
     { 
-      id: 'tech_card', 
-      name: '柔和科技卡片风', 
-      englishName: 'Soft Tech Card',
-      description: '科技感与柔和色调结合', 
-      englishDescription: 'Tech feel with soft colors',
-      background: 'bg-gradient-to-br from-blue-400 to-cyan-300'
+      id: 'info_card', 
+      name: '快速生成风格', 
+      englishName: 'Quick Info Card',
+      description: '节省时间简洁展示', 
+      englishDescription: 'Clean and time-saving display',
+      background: 'bg-blue-50',
+      textColor: 'text-blue-900',
+      accent: 'border-blue-200',
     },
     { 
-      id: 'business_info', 
-      name: '现代商务资讯卡片风', 
-      englishName: 'Modern Business Info',
-      description: '专业商务信息展示', 
-      englishDescription: 'Professional business information',
-      background: 'bg-gradient-to-br from-slate-600 to-slate-400'
+      id: 'professional', 
+      name: '专业美观风格', 
+      englishName: 'Professional Design',
+      description: '高质量设计感', 
+      englishDescription: 'High-quality design aesthetic',
+      background: 'bg-green-50',
+      textColor: 'text-green-900',
+      accent: 'border-green-200',
     },
     { 
-      id: 'fluid_tech', 
-      name: '流动科技蓝风格', 
-      englishName: 'Fluid Tech Blue',
-      description: '流动感科技蓝色主题', 
-      englishDescription: 'Flowing tech blue theme',
-      background: 'bg-gradient-to-br from-blue-600 to-indigo-400'
+      id: 'interactive', 
+      name: '交互体验风格', 
+      englishName: 'Interactive Experience',
+      description: '动态内容展示', 
+      englishDescription: 'Dynamic content display',
+      background: 'bg-yellow-50',
+      textColor: 'text-yellow-900',
+      accent: 'border-yellow-200',
     },
     { 
-      id: 'minimalist_grid', 
-      name: '极简格栅主义封面风格', 
-      englishName: 'Minimalist Grid',
-      description: '简约网格设计', 
-      englishDescription: 'Simple grid design',
-      background: 'bg-gradient-to-br from-gray-200 to-gray-300'
+      id: 'one_click', 
+      name: '一键分享风格', 
+      englishName: 'One-click Share',
+      description: '便捷传播信息', 
+      englishDescription: 'Easy information sharing',
+      background: 'bg-purple-50',
+      textColor: 'text-purple-900',
+      accent: 'border-purple-200',
     },
     { 
-      id: 'digital_ticket', 
-      name: '数字极简票券风', 
-      englishName: 'Digital Ticket',
-      description: '数字化简约票券设计', 
-      englishDescription: 'Minimalist digital ticket design',
-      background: 'bg-gradient-to-br from-purple-500 to-pink-400'
+      id: 'soft_pink', 
+      name: '柔美粉色风格', 
+      englishName: 'Soft Pink Style',
+      description: '温柔视觉体验', 
+      englishDescription: 'Gentle visual experience',
+      background: 'bg-pink-50',
+      textColor: 'text-purple-700',
+      accent: 'border-pink-200',
     },
     { 
-      id: 'new_constructivist', 
-      name: '新构成主义教学风', 
-      englishName: 'New Constructivism',
-      description: '现代构成主义教学设计', 
-      englishDescription: 'Modern constructivist teaching design',
-      background: 'bg-gradient-to-br from-yellow-400 to-orange-500'
+      id: 'dark_contrast', 
+      name: '黑白对比风格', 
+      englishName: 'Dark Contrast',
+      description: '强烈视觉冲击', 
+      englishDescription: 'Strong visual impact',
+      background: 'bg-black',
+      textColor: 'text-white',
+      accent: 'border-yellow-400',
     },
     { 
-      id: 'luxury_nature', 
-      name: '奢华自然意境风', 
-      englishName: 'Luxury Nature',
-      description: '高级自然意境设计', 
-      englishDescription: 'Premium natural scenery design',
-      background: 'bg-gradient-to-br from-emerald-400 to-green-600'
+      id: 'minimalist', 
+      name: '极简自然风格', 
+      englishName: 'Minimalist Nature',
+      description: '简约大气设计', 
+      englishDescription: 'Simple elegant design',
+      background: 'bg-gray-100',
+      textColor: 'text-gray-800',
+      accent: 'border-gray-300',
     },
     { 
-      id: 'industrial_rebel', 
-      name: '新潮工业反叛风', 
-      englishName: 'Industrial Rebel',
-      description: '现代工业反叛设计', 
-      englishDescription: 'Modern industrial rebel design',
-      background: 'bg-gradient-to-br from-stone-700 to-stone-500'
+      id: 'grid_system', 
+      name: '网格构成风格', 
+      englishName: 'Grid System',
+      description: '结构化设计系统', 
+      englishDescription: 'Structured design system',
+      background: 'bg-gray-900',
+      textColor: 'text-white',
+      accent: 'border-red-500',
     },
     { 
-      id: 'cute_knowledge', 
-      name: '软萌知识卡片风', 
-      englishName: 'Cute Knowledge Card',
-      description: '可爱知识卡片设计', 
-      englishDescription: 'Cute knowledge card design',
-      background: 'bg-gradient-to-br from-pink-300 to-rose-200'
+      id: 'tech_blue', 
+      name: '科技蓝风格', 
+      englishName: 'Tech Blue',
+      description: '现代科技感设计', 
+      englishDescription: 'Modern tech design',
+      background: 'bg-blue-50',
+      textColor: 'text-blue-700',
+      accent: 'border-blue-300',
     },
     { 
-      id: 'simple_business', 
-      name: '商务简约信息卡片风', 
-      englishName: 'Simple Business Card',
-      description: '简约商务信息卡片', 
-      englishDescription: 'Simple business information card',
-      background: 'bg-gradient-to-br from-blue-500 to-blue-300'
+      id: 'green_nature', 
+      name: '绿色环保风格', 
+      englishName: 'Green Nature',
+      description: '自然生态主题', 
+      englishDescription: 'Natural eco theme',
+      background: 'bg-green-800',
+      textColor: 'text-white',
+      accent: 'border-green-300',
     },
   ];
 
@@ -121,8 +144,8 @@ const StyleSelector: React.FC<StyleSelectorProps> = ({
                 : 'ring-1 ring-slate-700 hover:ring-slate-600'
               }`}
           >
-            <div className={`absolute inset-0 ${style.background} opacity-70`}></div>
-            <div className="relative z-10 text-white">
+            <div className={`absolute inset-0 ${style.background} opacity-80`}></div>
+            <div className={`relative z-10 ${style.textColor}`}>
               <div className="font-medium">
                 {selectedStyle === style.id && (
                   <div className="absolute -right-1 -top-1 bg-primary rounded-full p-0.5">
@@ -131,7 +154,7 @@ const StyleSelector: React.FC<StyleSelectorProps> = ({
                 )}
                 {language === 'zh' ? style.name : style.englishName}
               </div>
-              <span className="text-xs text-white/80">
+              <span className={`text-xs ${style.textColor} opacity-80`}>
                 {language === 'zh' ? style.description : style.englishDescription}
               </span>
             </div>

@@ -1,0 +1,18 @@
+{
+  "name": "poster-generator-proxy",
+  "version": "1.0.0",
+  "description": "代理服务器，用于转发API请求以解决CORS问题",
+  "main": "proxy.js",
+  "scripts": {
+    "start": "node proxy.js",
+    "dev": "nodemon proxy.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.2",
+    "cors": "^2.8.5",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+} 

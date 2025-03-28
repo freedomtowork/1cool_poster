@@ -11,7 +11,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger
 } from "@/components/ui/collapsible";
-import { ChevronDown, ChevronUp, Save, Undo, Redo, Copy, Globe } from 'lucide-react';
+import { ChevronDown, ChevronUp, Save, Undo, Redo, Copy } from 'lucide-react';
 
 const PosterGenerator = () => {
   const [language, setLanguage] = useState('zh');
@@ -60,20 +60,7 @@ const PosterGenerator = () => {
       {/* Left side - Editor Panel */}
       <div className={`${isMobile ? 'w-full' : 'w-1/3'} bg-slate-900 p-4 overflow-y-auto`}>
         <div className="max-w-md mx-auto space-y-6">
-          {/* Language Toggle */}
-          <div className="flex justify-end mb-2">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => handleLanguageChange(language === 'zh' ? 'en' : 'zh')}
-              className="text-slate-300 hover:text-white"
-            >
-              <Globe size={16} className="mr-1" />
-              {language === 'zh' ? 'English' : '中文'}
-            </Button>
-          </div>
-          
-          {/* Text Input - First */}
+          {/* Text Input */}
           <div className="glass-card rounded-xl p-4 md:p-6">
             <h3 className="text-lg font-medium mb-4 text-slate-200">
               {language === 'zh' ? '输入文字' : 'Enter Text'}
@@ -91,7 +78,7 @@ const PosterGenerator = () => {
             </div>
           </div>
           
-          {/* Style Selector - Second */}
+          {/* Style Selector */}
           <div className="glass-card rounded-xl p-4 md:p-6">
             <h3 className="text-lg font-medium mb-4 text-slate-200">
               {language === 'zh' ? '选择风格' : 'Choose Style'}
@@ -100,18 +87,6 @@ const PosterGenerator = () => {
               selectedStyle={style} 
               onStyleChange={setStyle}
               language={language}
-            />
-          </div>
-          
-          {/* Scene/Platform Selector - Third */}
-          <div className="glass-card rounded-xl p-4 md:p-6">
-            <h3 className="text-lg font-medium mb-4 text-slate-200">
-              {language === 'zh' ? '选择平台' : 'Choose Platform'}
-            </h3>
-            <SceneSelector 
-              selectedScene={scene} 
-              selectedLanguage={language} 
-              onSceneChange={setScene} 
             />
           </div>
           
@@ -129,14 +104,29 @@ const PosterGenerator = () => {
       </div>
       
       {/* Right side - Canvas/Preview */}
-      <div className={`${isMobile ? 'w-full mt-6' : 'w-2/3'} flex items-center justify-center p-4 bg-slate-950`}>
-        <PosterPreview 
-          language={language}
-          scene={scene}
-          style={style}
-          text={text}
-          loading={isGenerating}
-        />
+      <div className={`${isMobile ? 'w-full mt-6' : 'w-2/3'} flex flex-col p-4 bg-slate-950`}>
+        {/* Platform selector moved to above canvas */}
+        <div className="mb-4 glass-card rounded-xl p-4">
+          <h3 className="text-lg font-medium mb-4 text-slate-200">
+            {language === 'zh' ? '选择平台' : 'Choose Platform'}
+          </h3>
+          <SceneSelector 
+            selectedScene={scene} 
+            selectedLanguage={language} 
+            onSceneChange={setScene} 
+          />
+        </div>
+        
+        {/* Poster preview */}
+        <div className="flex-1 flex items-center justify-center">
+          <PosterPreview 
+            language={language}
+            scene={scene}
+            style={style}
+            text={text}
+            loading={isGenerating}
+          />
+        </div>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { ChevronDown, Globe, User } from 'lucide-react';
+import { ChevronDown, Globe, User, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '../hooks/use-mobile';
 import { Link } from 'react-router-dom';
@@ -38,6 +38,7 @@ const Navbar = () => {
   };
 
   const pricingText = language === 'zh' ? '升级会员' : 'Pricing';
+  const exportText = language === 'zh' ? '导出' : 'Export';
   const languageDisplayName = language === 'zh' ? '简体中文' : 'English';
 
   return (
@@ -53,6 +54,15 @@ const Navbar = () => {
           <Link to="/pricing" className="text-sm font-medium hover:text-primary transition-colors">
             {pricingText}
           </Link>
+          
+          <Button 
+            variant="default" 
+            size="sm" 
+            className="bg-cyan-500 hover:bg-cyan-600 text-white"
+          >
+            <Download className="h-4 w-4 mr-1" />
+            {exportText}
+          </Button>
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

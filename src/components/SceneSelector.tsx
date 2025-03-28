@@ -15,6 +15,7 @@ type SceneSelectorProps = {
   onSceneChange: (sceneId: string) => void;
 };
 
+// This component is now only used as a fallback - we've replaced it with tabs in PosterGenerator
 const SceneSelector: React.FC<SceneSelectorProps> = ({
   selectedScene,
   selectedLanguage,

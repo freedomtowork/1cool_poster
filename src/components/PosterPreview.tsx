@@ -1,7 +1,4 @@
-
 import React, { useEffect, useState } from 'react';
-import { Download, Share2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { useIsMobile } from '../hooks/use-mobile';
 
 type PosterPreviewProps = {
@@ -84,9 +81,6 @@ const PosterPreview: React.FC<PosterPreviewProps> = ({
     }
     return 'aspect-[3/4]'; // Default to 3:4
   };
-
-  const downloadText = language === 'zh' ? '下载' : 'Download';
-  const shareText = language === 'zh' ? '分享' : 'Share';
 
   return (
     <div className="flex flex-col items-center w-full max-w-xl">
@@ -186,17 +180,6 @@ const PosterPreview: React.FC<PosterPreviewProps> = ({
             </div>
           </div>
         )}
-      </div>
-      
-      <div className="flex items-center space-x-3 mt-4 animate-fade-in">
-        <Button variant="outline" size={isMobile ? "sm" : "default"} className="gap-1 bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700">
-          <Download className={`${isMobile ? 'w-3 h-3' : 'w-4 h-4'}`} />
-          {downloadText}
-        </Button>
-        <Button variant="outline" size={isMobile ? "sm" : "default"} className="gap-1 bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700">
-          <Share2 className={`${isMobile ? 'w-3 h-3' : 'w-4 h-4'}`} />
-          {shareText}
-        </Button>
       </div>
     </div>
   );

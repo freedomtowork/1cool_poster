@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { ChevronDown, Globe, User, Bell } from 'lucide-react';
+import { ChevronDown, Globe, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '../hooks/use-mobile';
 import { Link } from 'react-router-dom';
@@ -72,10 +72,6 @@ const Navbar = () => {
             </DropdownMenuContent>
           </DropdownMenu>
           
-          <Button variant="ghost" size="icon" className="text-slate-400 hover:text-white">
-            <Bell size={18} />
-          </Button>
-          
           <Button variant="ghost" size="icon" className="rounded-full bg-slate-800 text-slate-200">
             <User size={18} />
           </Button>
@@ -86,4 +82,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-// Removed the duplicate export of LanguageContext here

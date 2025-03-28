@@ -11,7 +11,8 @@ import {
   TabsTrigger,
   TabsContent
 } from "@/components/ui/tabs";
-import { Download, Share2 } from 'lucide-react';
+import { Download } from 'lucide-react';
+import SceneSelector from './SceneSelector';
 
 const PosterGenerator = () => {
   const [language, setLanguage] = useState('zh');
@@ -34,6 +35,11 @@ const PosterGenerator = () => {
     setTimeout(() => {
       setIsGenerating(false);
     }, 1500);
+  };
+
+  const handleExport = () => {
+    console.log('Exporting poster...');
+    // Implementation for exporting would go here
   };
 
   const placeholderText = language === 'zh' 
@@ -73,24 +79,6 @@ const PosterGenerator = () => {
           />
         </div>
         
-        {/* Platform tabs */}
-        <Tabs defaultValue={scene} onValueChange={setScene} className="mb-6">
-          <div className="mb-2 text-lg font-medium text-slate-200">
-            {language === 'zh' ? '选择平台' : 'Choose Platform'}
-          </div>
-          <TabsList className="w-full bg-slate-800">
-            {scenes.map((sceneItem) => (
-              <TabsTrigger 
-                key={sceneItem.id} 
-                value={sceneItem.id}
-                className="flex-1 data-[state=active]:bg-slate-700"
-              >
-                {sceneItem.name}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
-        
         {/* Style Selector */}
         <div className="glass-card rounded-xl p-4 mb-6">
           <h3 className="text-lg font-medium mb-4 text-slate-200">
@@ -100,6 +88,18 @@ const PosterGenerator = () => {
             selectedStyle={style} 
             onStyleChange={setStyle}
             language={language}
+          />
+        </div>
+        
+        {/* Scene Selector */}
+        <div className="glass-card rounded-xl p-4 mb-6">
+          <h3 className="text-lg font-medium mb-4 text-slate-200">
+            {language === 'zh' ? '选择平台' : 'Choose Platform'}
+          </h3>
+          <SceneSelector 
+            selectedScene={scene}
+            selectedLanguage={language}
+            onSceneChange={setScene}
           />
         </div>
         
@@ -125,17 +125,14 @@ const PosterGenerator = () => {
           />
         </div>
         
-        {/* Action buttons */}
-        <div className="flex justify-center gap-4">
-          <Button variant="outline" className="flex-1 gap-1 bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700">
-            <Download className="w-4 h-4" />
-            {language === 'zh' ? '下载' : 'Download'}
-          </Button>
-          <Button variant="outline" className="flex-1 gap-1 bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700">
-            <Share2 className="w-4 h-4" />
-            {language === 'zh' ? '分享' : 'Share'}
-          </Button>
-        </div>
+        {/* Export button */}
+        <Button 
+          onClick={handleExport} 
+          className="w-full gap-1 bg-slate-800 hover:bg-slate-700 text-slate-200"
+        >
+          <Download className="w-4 h-4" />
+          {language === 'zh' ? '导出海报' : 'Export Poster'}
+        </Button>
       </div>
     );
   }
@@ -164,21 +161,6 @@ const PosterGenerator = () => {
       
       {/* Middle column - Platform tabs and Canvas */}
       <div className="w-2/4 flex flex-col p-4 bg-slate-950">
-        {/* Platform selector as tabs */}
-        <Tabs defaultValue={scene} onValueChange={setScene} className="mb-6">
-          <TabsList className="w-full bg-slate-800">
-            {scenes.map((sceneItem) => (
-              <TabsTrigger 
-                key={sceneItem.id} 
-                value={sceneItem.id}
-                className="flex-1 data-[state=active]:bg-slate-700"
-              >
-                {sceneItem.name}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
-        
         {/* Poster preview */}
         <div className="flex-1 flex items-center justify-center">
           <PosterPreview 
@@ -190,15 +172,14 @@ const PosterGenerator = () => {
           />
         </div>
         
-        {/* Action buttons */}
-        <div className="flex justify-center gap-4 mt-6">
-          <Button variant="outline" className="gap-1 bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700">
+        {/* Export button */}
+        <div className="flex justify-center mt-6">
+          <Button 
+            onClick={handleExport} 
+            className="w-full sm:w-auto gap-1 bg-slate-800 hover:bg-slate-700 text-slate-200"
+          >
             <Download className="w-4 h-4" />
-            {language === 'zh' ? '下载' : 'Download'}
-          </Button>
-          <Button variant="outline" className="gap-1 bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700">
-            <Share2 className="w-4 h-4" />
-            {language === 'zh' ? '分享' : 'Share'}
+            {language === 'zh' ? '导出海报' : 'Export Poster'}
           </Button>
         </div>
       </div>
@@ -213,6 +194,17 @@ const PosterGenerator = () => {
             selectedStyle={style} 
             onStyleChange={setStyle}
             language={language}
+          />
+        </div>
+        
+        <div className="glass-card rounded-xl p-4 md:p-6 mb-6">
+          <h3 className="text-lg font-medium mb-4 text-slate-200">
+            {language === 'zh' ? '选择平台' : 'Choose Platform'}
+          </h3>
+          <SceneSelector 
+            selectedScene={scene}
+            selectedLanguage={language}
+            onSceneChange={setScene}
           />
         </div>
         

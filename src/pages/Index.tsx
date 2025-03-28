@@ -12,7 +12,7 @@ const Index = () => {
     <div className="min-h-screen flex flex-col bg-slate-950 text-slate-200">
       <Navbar />
       
-      <div className="flex-1 pt-16">
+      <div className="flex-1">
         <PosterGenerator />
       </div>
       

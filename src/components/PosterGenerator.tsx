@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import SceneSelector from './SceneSelector';
 import StyleSelector from './StyleSelector';
 import PosterPreview from './PosterPreview';
 import { useIsMobile } from '../hooks/use-mobile';
@@ -12,7 +11,7 @@ import {
   TabsTrigger,
   TabsContent
 } from "@/components/ui/tabs";
-import { Save, Download, Share2 } from 'lucide-react';
+import { Download, Share2 } from 'lucide-react';
 
 const PosterGenerator = () => {
   const [language, setLanguage] = useState('zh');
@@ -58,99 +57,174 @@ const PosterGenerator = () => {
     }
   }, [language]);
 
-  return (
-    <div className="flex flex-col h-full">
-      {/* Main content area with tabs */}
-      <div className="flex flex-1">
-        {/* Left side - Text Input Panel (expanded) */}
-        <div className={`${isMobile ? 'w-full' : 'w-1/2'} bg-slate-900 p-4 overflow-y-auto`}>
-          <div className="max-w-lg mx-auto">
-            {/* Text Input */}
-            <div className="glass-card rounded-xl p-4 md:p-6 mb-6">
-              <h3 className="text-lg font-medium mb-4 text-slate-200">
-                {language === 'zh' ? '输入文字' : 'Enter Text'}
-              </h3>
-              <Textarea 
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                placeholder={placeholderText}
-                className="min-h-[400px] mb-4 bg-slate-800 border-slate-700 text-slate-200 placeholder:text-slate-500"
-              />
-              <div className="text-xs text-slate-400 italic">
-                {language === 'zh' 
-                  ? '提示：使用上述格式可让AI更好地理解您的内容结构' 
-                  : 'Tip: Using the format above will help the AI better understand your content structure'}
-              </div>
-            </div>
-            
-            {/* Generate Button */}
-            <Button 
-              onClick={handleGenerate} 
-              disabled={isGenerating} 
-              className="w-full mt-2 bg-cyan-500 hover:bg-cyan-600 text-white"
-            >
-              {isGenerating 
-                ? (language === 'zh' ? '生成中...' : 'Generating...') 
-                : (language === 'zh' ? '生成海报' : 'Generate Poster')}
-            </Button>
-          </div>
+  if (isMobile) {
+    return (
+      <div className="flex flex-col h-full p-4">
+        {/* Text Input for mobile view */}
+        <div className="glass-card rounded-xl p-4 mb-6">
+          <h3 className="text-lg font-medium mb-4 text-slate-200">
+            {language === 'zh' ? '输入文字' : 'Enter Text'}
+          </h3>
+          <Textarea 
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder={placeholderText}
+            className="min-h-[200px] mb-4 bg-slate-800 border-slate-700 text-slate-200 placeholder:text-slate-500"
+          />
         </div>
         
-        {/* Right side - Canvas/Preview */}
-        <div className={`${isMobile ? 'w-full mt-6' : 'w-1/2'} flex flex-col p-4 bg-slate-950`}>
-          {/* Platform selector as tabs */}
-          <Tabs defaultValue={scene} onValueChange={setScene} className="mb-6">
-            <div className="mb-2 text-lg font-medium text-slate-200">
-              {language === 'zh' ? '选择平台' : 'Choose Platform'}
-            </div>
-            <TabsList className="w-full bg-slate-800">
-              {scenes.map((sceneItem) => (
-                <TabsTrigger 
-                  key={sceneItem.id} 
-                  value={sceneItem.id}
-                  className="flex-1 data-[state=active]:bg-slate-700"
-                >
-                  {sceneItem.name}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
-          
-          {/* Style Selector */}
-          <div className="glass-card rounded-xl p-4 md:p-6 mb-6">
-            <h3 className="text-lg font-medium mb-4 text-slate-200">
-              {language === 'zh' ? '选择风格' : 'Choose Style'}
-            </h3>
-            <StyleSelector 
-              selectedStyle={style} 
-              onStyleChange={setStyle}
-              language={language}
-            />
+        {/* Platform tabs */}
+        <Tabs defaultValue={scene} onValueChange={setScene} className="mb-6">
+          <div className="mb-2 text-lg font-medium text-slate-200">
+            {language === 'zh' ? '选择平台' : 'Choose Platform'}
           </div>
-          
-          {/* Poster preview */}
-          <div className="flex-1 flex items-center justify-center mt-4">
-            <PosterPreview 
-              language={language}
-              scene={scene}
-              style={style}
-              text={text}
-              loading={isGenerating}
-            />
-          </div>
-          
-          {/* Action buttons */}
-          <div className="flex justify-center gap-4 mt-6">
-            <Button variant="outline" className="gap-1 bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700">
-              <Download className="w-4 h-4" />
-              {language === 'zh' ? '下载' : 'Download'}
-            </Button>
-            <Button variant="outline" className="gap-1 bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700">
-              <Share2 className="w-4 h-4" />
-              {language === 'zh' ? '分享' : 'Share'}
-            </Button>
+          <TabsList className="w-full bg-slate-800">
+            {scenes.map((sceneItem) => (
+              <TabsTrigger 
+                key={sceneItem.id} 
+                value={sceneItem.id}
+                className="flex-1 data-[state=active]:bg-slate-700"
+              >
+                {sceneItem.name}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
+        
+        {/* Style Selector */}
+        <div className="glass-card rounded-xl p-4 mb-6">
+          <h3 className="text-lg font-medium mb-4 text-slate-200">
+            {language === 'zh' ? '选择风格' : 'Choose Style'}
+          </h3>
+          <StyleSelector 
+            selectedStyle={style} 
+            onStyleChange={setStyle}
+            language={language}
+          />
+        </div>
+        
+        {/* Generate Button */}
+        <Button 
+          onClick={handleGenerate} 
+          disabled={isGenerating} 
+          className="w-full mb-6 bg-cyan-500 hover:bg-cyan-600 text-white"
+        >
+          {isGenerating 
+            ? (language === 'zh' ? '生成中...' : 'Generating...') 
+            : (language === 'zh' ? '生成海报' : 'Generate Poster')}
+        </Button>
+        
+        {/* Poster preview */}
+        <div className="flex-1 flex items-center justify-center mb-6">
+          <PosterPreview 
+            language={language}
+            scene={scene}
+            style={style}
+            text={text}
+            loading={isGenerating}
+          />
+        </div>
+        
+        {/* Action buttons */}
+        <div className="flex justify-center gap-4">
+          <Button variant="outline" className="flex-1 gap-1 bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700">
+            <Download className="w-4 h-4" />
+            {language === 'zh' ? '下载' : 'Download'}
+          </Button>
+          <Button variant="outline" className="flex-1 gap-1 bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700">
+            <Share2 className="w-4 h-4" />
+            {language === 'zh' ? '分享' : 'Share'}
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex h-full">
+      {/* Left column - Text Input Panel */}
+      <div className="w-1/4 bg-slate-900 p-4 overflow-y-auto">
+        <div className="h-full flex flex-col">
+          <h3 className="text-lg font-medium mb-4 text-slate-200">
+            {language === 'zh' ? '输入文字' : 'Enter Text'}
+          </h3>
+          <Textarea 
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder={placeholderText}
+            className="flex-1 min-h-[calc(100vh-200px)] mb-4 bg-slate-800 border-slate-700 text-slate-200 placeholder:text-slate-500"
+          />
+          <div className="text-xs text-slate-400 italic mb-4">
+            {language === 'zh' 
+              ? '提示：使用上述格式可让AI更好地理解您的内容结构' 
+              : 'Tip: Using the format above will help the AI better understand your content structure'}
           </div>
         </div>
+      </div>
+      
+      {/* Middle column - Platform tabs and Canvas */}
+      <div className="w-2/4 flex flex-col p-4 bg-slate-950">
+        {/* Platform selector as tabs */}
+        <Tabs defaultValue={scene} onValueChange={setScene} className="mb-6">
+          <TabsList className="w-full bg-slate-800">
+            {scenes.map((sceneItem) => (
+              <TabsTrigger 
+                key={sceneItem.id} 
+                value={sceneItem.id}
+                className="flex-1 data-[state=active]:bg-slate-700"
+              >
+                {sceneItem.name}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
+        
+        {/* Poster preview */}
+        <div className="flex-1 flex items-center justify-center">
+          <PosterPreview 
+            language={language}
+            scene={scene}
+            style={style}
+            text={text}
+            loading={isGenerating}
+          />
+        </div>
+        
+        {/* Action buttons */}
+        <div className="flex justify-center gap-4 mt-6">
+          <Button variant="outline" className="gap-1 bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700">
+            <Download className="w-4 h-4" />
+            {language === 'zh' ? '下载' : 'Download'}
+          </Button>
+          <Button variant="outline" className="gap-1 bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700">
+            <Share2 className="w-4 h-4" />
+            {language === 'zh' ? '分享' : 'Share'}
+          </Button>
+        </div>
+      </div>
+      
+      {/* Right column - Style selector and Generate button */}
+      <div className="w-1/4 bg-slate-900 p-4 overflow-y-auto">
+        <div className="glass-card rounded-xl p-4 md:p-6 mb-6">
+          <h3 className="text-lg font-medium mb-4 text-slate-200">
+            {language === 'zh' ? '选择风格' : 'Choose Style'}
+          </h3>
+          <StyleSelector 
+            selectedStyle={style} 
+            onStyleChange={setStyle}
+            language={language}
+          />
+        </div>
+        
+        <Button 
+          onClick={handleGenerate} 
+          disabled={isGenerating} 
+          className="w-full mt-6 bg-cyan-500 hover:bg-cyan-600 text-white"
+        >
+          {isGenerating 
+            ? (language === 'zh' ? '生成中...' : 'Generating...') 
+            : (language === 'zh' ? '生成海报' : 'Generate Poster')}
+        </Button>
       </div>
     </div>
   );

@@ -1,69 +1,91 @@
-# Welcome to your Lovable project
 
-## Project info
+# 多语言海报生成器 (Multilingual Poster Generator)
 
-**URL**: https://lovable.dev/projects/86461f51-60f1-4381-96a6-f2814f0f7021
+一个强大的基于AI的海报生成工具，可以为不同平台创建精美的海报和封面图像。
 
-## How can I edit this code?
+## 项目特点
 
-There are several ways of editing your application.
+- 🌐 **多平台支持**：为小红书、微信公众号、B站等平台生成优化的封面
+- 🎨 **多种设计风格**：提供多种精美的设计风格选择
+- 🤖 **AI驱动**：使用先进的大语言模型生成创意海报
+- 💻 **响应式界面**：在桌面和移动设备上都能完美运行
+- 🔄 **实时预览**：在生成前查看海报预览
+- 📤 **一键导出**：轻松导出为PNG或HTML格式
 
-**Use Lovable**
+## 开始使用
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/86461f51-60f1-4381-96a6-f2814f0f7021) and start prompting.
+1. 克隆仓库
+   ```bash
+   git clone https://github.com/yourusername/multilingual-poster-gen.git
+   cd multilingual-poster-gen
+   ```
 
-Changes made via Lovable will be committed automatically to this repo.
+2. 安装依赖
+   ```bash
+   npm install
+   # 或使用yarn
+   yarn install
+   ```
 
-**Use your preferred IDE**
+3. 启动开发服务器
+   ```bash
+   npm run dev
+   # 或使用yarn
+   yarn dev
+   ```
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+4. 在浏览器中访问 `http://localhost:8080`
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## 使用指南
 
-Follow these steps:
+1. **输入文本内容**：在左侧文本框中输入您的海报文字内容
+2. **选择平台**：选择目标平台（小红书、微信、B站）
+3. **选择风格**：从多种设计风格中选择一种
+4. **配置模型**：点击"配置模型"按钮设置您的AI模型API密钥
+5. **生成海报**：点击"生成封面"按钮
+6. **导出**：生成完成后，点击"导出"按钮下载海报
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## 模型配置
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+首次使用时，您需要设置AI模型的配置信息：
 
-# Step 3: Install the necessary dependencies.
-npm i
+1. 点击"配置模型"按钮
+2. 输入您的API密钥和相关设置
+3. 选择需要使用的模型
+4. 点击保存
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+支持的API提供商：
+- OpenAI
+- Anthropic
+- Silicon.Run
+- OpenRouter等
 
-**Edit a file directly in GitHub**
+## 技术栈
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with .
-
-- Vite
-- TypeScript
 - React
-- shadcn-ui
+- TypeScript
 - Tailwind CSS
+- Shadcn UI
+- Axios
+- html2canvas (用于导出)
 
-## How can I deploy this project?
+## 贡献指南
 
-Simply open [Lovable](https://lovable.dev/projects/86461f51-60f1-4381-96a6-f2814f0f7021) and click on Share -> Publish.
+欢迎提交Pull Request或Issue来帮助改进这个项目。
 
-## I want to use a custom domain - is that possible?
+## 许可证
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+本项目采用MIT许可证。详情请查看[LICENSE](LICENSE)文件。
+
+## 问题排查
+
+如果您在使用过程中遇到问题：
+
+1. 确保已正确配置API密钥
+2. 检查网络连接状态
+3. 尝试使用其他模型或提供商
+4. 如果问题持续存在，请提交Issue
+
+---
+
+希望这个工具能帮助您创建美观的社交媒体封面！

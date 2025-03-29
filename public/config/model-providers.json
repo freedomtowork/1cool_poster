@@ -1,0 +1,53 @@
+{
+  "providers": {
+    "anthropic": {
+      "name": "Anthropic",
+      "url": "https://api.anthropic.com/v1",
+      "models": [
+        { "id": "claude-3.7-sonnet", "name": "Claude 3.7 Sonnet" }
+      ]
+    },
+    "google": {
+      "name": "Gemini",
+      "url": "https://generativelanguage.googleapis.com",
+      "models": [
+        { "id": "gemini-2.5-pro-exp-03-25", "name": "Gemini 2.5 Pro Experimental 03-25" }
+      ]
+    },
+    "openrouter": {
+      "name": "OpenRouter",
+      "url": "https://openrouter.ai/api/v1",
+      "models": [
+        { "id": "anthropic/claude-3.7-sonnet", "name": "Anthropic: Claude 3.7 Sonnet" },
+        { "id": "anthropic/claude-3.7-sonnet:thinking", "name": "Anthropic: Claude 3.7 Sonnet (thinking)" },
+        { "id": "deepseek/deepseek-chat-v3-0324:free", "name": "DeepSeek: DeepSeek V3 0324 (free)" },
+        { "id": "deepseek/deepseek-chat-v3-0324", "name": "DeepSeek: DeepSeek V3 0324" },
+        { "id": "google/gemini-2.5-pro-exp-03-25:free", "name": "Google: Gemini Pro 2.5 Experimental (free)" }
+      ]
+    },
+    "silicon": {
+      "name": "硅肌流动",
+      "url": "https://api.silicon.run",
+      "models": [
+        { "id": "Pro/deepseek-ai/DeepSeek-V3", "name": "DeepSeek-V3 (Pro)" },
+        { "id": "deepseek-ai/DeepSeek-V3", "name": "DeepSeek-V3" }
+      ]
+    },
+    "custom": {
+      "name": "自定义",
+      "url": "",
+      "models": []
+    }
+  },
+  "defaultProvider": "silicon",
+  "defaultModels": {
+    "silicon": "Pro/deepseek-ai/DeepSeek-V3",
+    "anthropic": "claude-3.7-sonnet",
+    "google": "gemini-2.5-pro-exp-03-25",
+    "openrouter": "deepseek/deepseek-chat-v3-0324:free"
+  },
+  "tabOrder": [
+    ["silicon", "openrouter", "custom"],
+    ["anthropic", "google"]
+  ]
+} 

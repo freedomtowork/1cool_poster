@@ -262,7 +262,7 @@ ${fullPrompt.用户输入.内容}
         messagesCount: 2, // 系统提示和用户消息
         systemPromptLength: "You are a professional web designer, skilled at creating beautiful HTML posters.".length,
         userPromptLength: prompt.length,
-        temperature: 1.0,
+        temperature: 0.7,
         max_tokens: 10000
       });
 
@@ -292,7 +292,7 @@ ${fullPrompt.用户输入.内容}
             { role: "system", content: systemPrompt },
             { role: "user", content: prompt }
           ],
-          temperature: 1.0,
+          temperature: 0.7,
           max_tokens: 10000,
         };
 
@@ -503,8 +503,8 @@ ${fullPrompt.用户输入.内容}
         loadingIndicator.style.zIndex = '1000';
         loadingIndicator.innerHTML = `
           <div style="width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid #3498db; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-          <div style="margin-top: 20px; font-size: 18px; color: white;">正在生成海报，请稍候...</div>
-          <div style="margin-top: 10px; font-size: 14px; color: #cccccc;">这可能需要几秒钟时间</div>
+          <div style="margin-top: 20px; font-size: 18px; color: white;">易美小助手正在帮你变好看，请稍等...✨</div>
+          <div style="margin-top: 10px; font-size: 14px; color: #cccccc;">不满意？别担心，就像抽盲盒一样，多试几次总会遇到“隐藏款”！😎</div>
           <style>
             @keyframes spin {
               0% { transform: rotate(0deg); }
@@ -1514,8 +1514,8 @@ ${fullPrompt.用户输入.内容}
         {isGenerating && (
           <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-slate-950 bg-opacity-90">
             <div className="animate-spin rounded-full h-20 w-20 border-t-2 border-b-2 border-cyan-500 mb-4"></div>
-            <p className="text-slate-300">正在生成海报，请稍候...</p>
-            <p className="text-slate-400 text-sm mt-2">这可能需要几秒钟时间</p>
+            <p className="text-slate-300">易美小助手正在帮你变好看，请稍等...✨</p>
+            <p className="text-slate-400 text-sm mt-2">不满意？别担心，就像抽盲盒一样，多试几次总会遇到“隐藏款”！😎</p>
           </div>
         )}
         

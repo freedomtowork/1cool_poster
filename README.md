@@ -1,5 +1,6 @@
-
 # 多语言海报生成器 (Multilingual Poster Generator)
+
+[![English Documentation](https://img.shields.io/badge/Documentation-English-blue.svg)](README_en.md)
 
 一个强大的基于AI的海报生成工具，可以为不同平台创建精美的海报和封面图像。
 

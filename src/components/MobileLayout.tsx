@@ -1,6 +1,5 @@
 import React from 'react';
 import { 
-  Home, 
   Image,
   Menu 
 } from 'lucide-react';
@@ -23,13 +22,8 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
         {children}
       </main>
       
-      {/* Mobile Bottom Navigation Bar */}
-      <nav className="fixed bottom-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-md border-t border-gray-200 flex items-center justify-around z-50">
-        <Link to="/" className="flex flex-col items-center justify-center text-primary">
-          <Home size={24} />
-          <span className="text-xs mt-1">首页</span>
-        </Link>
-        
+      {/* Mobile Bottom Navigation Bar - 简化为只有创建和菜单功能 */}
+      <nav className="fixed bottom-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-md border-t border-gray-200 flex items-center justify-around z-50 dark:bg-slate-800/80 dark:border-slate-700">
         <a href="#generator" className="flex flex-col items-center justify-center">
           <Image size={24} />
           <span className="text-xs mt-1">创建</span>
@@ -44,12 +38,8 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
           </SheetTrigger>
           <SheetContent side="right" className="w-[85%] sm:w-[385px]">
             <div className="py-6">
-              <h2 className="text-xl font-semibold mb-4">菜单</h2>
+              <h2 className="text-xl font-semibold mb-4">功能菜单</h2>
               <nav className="space-y-4">
-                <Link to="/" className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-secondary">
-                  <Home size={20} />
-                  <span>首页</span>
-                </Link>
                 <a href="#generator" className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-secondary">
                   <Image size={20} />
                   <span>创建封面</span>

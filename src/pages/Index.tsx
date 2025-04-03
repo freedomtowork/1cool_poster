@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import PosterGenerator from '../components/PosterGenerator';
 import Footer from '../components/Footer';
 import { useIsMobile } from '../hooks/use-mobile';
-import { Sun, Moon } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 
 // 创建主题上下文以便全局访问
 export const ThemeContext = React.createContext({
@@ -11,9 +9,27 @@ export const ThemeContext = React.createContext({
   toggleTheme: () => {}
 });
 
-const Index = () => {
+interface IndexProps {
+  activeTab?: string; // 从App接收的activeTab
+  setActiveTab?: React.Dispatch<React.SetStateAction<string>>; // 从App接收的setActiveTab
+}
+
+const Index: React.FC<IndexProps> = ({ activeTab = 'cover', setActiveTab }) => {
   const isMobile = useIsMobile();
-  const [activeTab, setActiveTab] = useState('cover'); // 'cover' 或 'content'
+  const [localActiveTab, setLocalActiveTab] = useState(activeTab); // 本地状态，兼容原有逻辑
+  
+  // 当外部activeTab变化时，同步更新本地状态
+  useEffect(() => {
+    setLocalActiveTab(activeTab);
+  }, [activeTab]);
+  
+  // 本地标签切换，同时更新外部状态
+  const handleTabChange = (newTab: string) => {
+    setLocalActiveTab(newTab);
+    if (setActiveTab) {
+      setActiveTab(newTab);
+    }
+  };
   
   // 添加主题模式状态
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -41,74 +57,8 @@ const Index = () => {
   return (
     <ThemeContext.Provider value={{ isDarkMode, toggleTheme }}>
       <div className="min-h-screen flex flex-col bg-slate-950 text-slate-200">
-        <div className="bg-slate-900 p-4 shadow-md fixed top-0 left-0 right-0 z-50">
-          <div className={`flex ${isMobile ? 'flex-col' : ''} items-center relative`}>
-            {/* 移动端显示垂直布局 */}
-            {isMobile ? (
-              <>
-                <div className="flex w-full justify-between items-center mb-2">
-                  <h1 className="text-xl font-bold text-primary">易美自媒体助手</h1>
-                  {/* 主题切换按钮 - 移动版 */}
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="w-8 h-8 rounded-full"
-                    onClick={toggleTheme}
-                  >
-                    {isDarkMode ? <Sun className="h-4 w-4 text-yellow-300" /> : <Moon className="h-4 w-4 text-slate-300" />}
-                  </Button>
-                </div>
-                <div className="flex space-x-4 self-center">
-                  <button 
-                    className={`px-3 py-1 rounded transition-colors ${activeTab === 'cover' ? 'bg-cyan-500 text-white' : 'text-slate-300 hover:bg-slate-800'}`}
-                    onClick={() => setActiveTab('cover')}
-                  >
-                    封面
-                  </button>
-                  <button 
-                    className={`px-3 py-1 rounded transition-colors ${activeTab === 'content' ? 'bg-cyan-500 text-white' : 'text-slate-300 hover:bg-slate-800'}`}
-                    onClick={() => setActiveTab('content')}
-                  >
-                    正文
-                  </button>
-                </div>
-              </>
-            ) : (
-              /* 桌面端显示水平布局 */
-              <>
-                <h1 className="text-xl font-bold text-primary mr-6">易美自媒体助手</h1>
-                <div className="flex-1 flex justify-center">
-                  <div className="flex space-x-4">
-                    <button 
-                      className={`px-3 py-1 rounded transition-colors ${activeTab === 'cover' ? 'bg-cyan-500 text-white' : 'text-slate-300 hover:bg-slate-800'}`}
-                      onClick={() => setActiveTab('cover')}
-                    >
-                      封面
-                    </button>
-                    <button 
-                      className={`px-3 py-1 rounded transition-colors ${activeTab === 'content' ? 'bg-cyan-500 text-white' : 'text-slate-300 hover:bg-slate-800'}`}
-                      onClick={() => setActiveTab('content')}
-                    >
-                      正文
-                    </button>
-                  </div>
-                </div>
-                {/* 主题切换按钮 - 桌面版 */}
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="w-8 h-8 rounded-full absolute right-0"
-                  onClick={toggleTheme}
-                >
-                  {isDarkMode ? <Sun className="h-4 w-4 text-yellow-300" /> : <Moon className="h-4 w-4 text-slate-300" />}
-                </Button>
-              </>
-            )}
-          </div>
-        </div>
-        
-        <div className={`flex-1 ${isMobile ? 'pt-24' : 'pt-16'}`}>
-          {activeTab === 'cover' ? (
+        <div className="flex-1">
+          {localActiveTab === 'cover' ? (
             <PosterGenerator />
           ) : (
             <div className="flex items-center justify-center h-full p-8 text-center">

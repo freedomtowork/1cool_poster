@@ -255,6 +255,35 @@ const ModelConfigDialog: React.FC<ModelConfigDialogProps> = ({
     return null;
   }
 
+  // 根据行数决定使用不同的布局方式
+  const renderTabList = (row: ModelProvider[]) => {
+    // 根据每行的项目数量确定合适的布局类名
+    const getGridClass = (count: number) => {
+      switch (count) {
+        case 1: return "w-full";
+        case 2: return "grid grid-cols-2 gap-2 w-full";
+        case 3: return "grid grid-cols-3 gap-2 w-full";
+        case 4: return "grid grid-cols-4 gap-2 w-full";
+        case 5: return "grid grid-cols-5 gap-2 w-full";
+        default: return "flex flex-wrap gap-2";
+      }
+    };
+
+    return (
+      <TabsList className={`${getGridClass(row.length)} mb-2 bg-slate-700`}>
+        {row.map(providerId => (
+          <TabsTrigger 
+            key={providerId} 
+            value={providerId} 
+            className="data-[state=active]:bg-cyan-500 px-3 py-1.5 text-sm"
+          >
+            {providersConfig.providers[providerId].name}
+          </TabsTrigger>
+        ))}
+      </TabsList>
+    );
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
@@ -294,17 +323,7 @@ const ModelConfigDialog: React.FC<ModelConfigDialogProps> = ({
               {/* 根据配置的tabOrder渲染标签页 */}
               {providersConfig.tabOrder.map((row, rowIndex) => (
                 <div key={rowIndex} className={rowIndex > 0 ? 'mt-2' : ''}>
-                  <TabsList className={`grid grid-cols-${row.length} mb-2 bg-slate-700`}>
-                    {row.map(providerId => (
-                      <TabsTrigger 
-                        key={providerId} 
-                        value={providerId} 
-                        className="data-[state=active]:bg-cyan-500"
-                      >
-                        {providersConfig.providers[providerId].name}
-                      </TabsTrigger>
-                    ))}
-                  </TabsList>
+                  {renderTabList(row)}
                 </div>
               ))}
               

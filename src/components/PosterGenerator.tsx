@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import StyleSelector from './StyleSelector';
-import PosterPreview from './PosterPreview';
 import { useIsMobile } from '../hooks/use-mobile';
 import { 
   Tabs,
@@ -243,12 +242,16 @@ ${fullPrompt.用户输入.内容}
   const generatePoster = async (prompt: string) => {
     try {
       // 根据配置的API地址决定使用哪个API端点
-      const isOpenRouter = !modelConfig.apiUrl.includes('silicon.run');
+      const isOpenRouter = modelConfig.apiUrl === 'https://openrouter.ai/api/v1/chat/completions';
+      const isSiliconRun = modelConfig.apiUrl.includes('silicon.run');
       
-      // 准备API URL
-      const apiUrl = isOpenRouter 
-        ? 'https://openrouter.ai/api/v1/chat/completions'  // OpenRouter 正确的API端点
-        : `${modelConfig.apiUrl}/chat/completions`;     // 其他API端点
+      // 准备API URL - 尊重自定义URL配置
+      let apiUrl = modelConfig.apiUrl;
+      
+      // 如果是预设URL，需要格式化添加endpoint
+      if (isSiliconRun && !modelConfig.apiUrl.includes('/chat/completions')) {
+        apiUrl = `${modelConfig.apiUrl}/chat/completions`;
+      }
       
       console.log('调用API参数:', {
         url: apiUrl,
@@ -503,8 +506,8 @@ ${fullPrompt.用户输入.内容}
         loadingIndicator.style.zIndex = '1000';
         loadingIndicator.innerHTML = `
           <div style="width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid #3498db; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-          <div style="margin-top: 20px; font-size: 18px; color: white;">易美小助手正在帮你变好看，请稍等...✨</div>
-          <div style="margin-top: 10px; font-size: 14px; color: #cccccc;">不满意？别担心，就像抽盲盒一样，多试几次总会遇到“隐藏款”！😎</div>
+          <div style="margin-top: 20px; font-size: 18px; color: white;">1Cool正在帮你变好看，请稍等...✨</div>
+          <div style="margin-top: 10px; font-size: 14px; color: #cccccc;">不满意？别担心，就像抽盲盒一样，多试几次总会遇到"隐藏款"！😎</div>
           <style>
             @keyframes spin {
               0% { transform: rotate(0deg); }
@@ -731,34 +734,101 @@ ${fullPrompt.用户输入.内容}
               exportElement.style.width = `${width}px`;
               exportElement.style.height = `${height}px`;
               
-              // 等待DOM更新
-              setTimeout(() => {
-                // 使用html2canvas导出
-                window.html2canvas!(exportElement as HTMLElement)
-                  .then(canvas => {
-                    // 创建下载链接
-                    const link = document.createElement('a');
-                    link.download = `${scene}-poster.png`;
-                    link.href = canvas.toDataURL('image/png', 1.0);
-                    
-                    // 触发下载
-                    link.click();
-                    console.log('海报导出成功');
-                    
-                    // 恢复原始尺寸
-                    exportElement!.style.width = originalWidth;
-                    exportElement!.style.height = originalHeight;
-                  })
-                  .catch(err => {
-                    console.error('html2canvas导出失败:', err);
-                    // 恢复原始尺寸
-                    exportElement!.style.width = originalWidth;
-                    exportElement!.style.height = originalHeight;
-                    
-                    // 回退到导出HTML
-                    exportAsHtml();
+              // 等待DOM更新和资源加载
+              const waitForResources = async () => {
+                // 等待字体加载
+                await document.fonts.ready;
+                
+                // 等待所有图片加载
+                const images = exportElement.getElementsByTagName('img');
+                await Promise.all(Array.from(images).map(img => {
+                  if (img.complete) return Promise.resolve();
+                  return new Promise((resolve, reject) => {
+                    img.onload = resolve;
+                    img.onerror = reject;
                   });
-              }, 100);
+                }));
+                
+                // 等待Font Awesome图标加载
+                const iconElements = exportElement.querySelectorAll('.fas, .far, .fab');
+                if (iconElements.length > 0) {
+                  // 检查Font Awesome是否已加载
+                  const styleSheets = Array.from(document.styleSheets);
+                  const hasFontAwesome = styleSheets.some(sheet => 
+                    sheet.href && sheet.href.includes('font-awesome')
+                  );
+                  
+                  if (!hasFontAwesome) {
+                    // 如果Font Awesome未加载，等待加载
+                    await new Promise(resolve => {
+                      const link = document.createElement('link');
+                      link.rel = 'stylesheet';
+                      link.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css';
+                      link.onload = resolve;
+                      document.head.appendChild(link);
+                    });
+                  }
+                }
+                
+                // 额外等待以确保所有样式都已应用
+                await new Promise(resolve => setTimeout(resolve, 100));
+              };
+              
+              // 执行导出流程
+              waitForResources().then(() => {
+                // 使用html2canvas导出，添加更多选项以提高精确度
+                window.html2canvas!(exportElement as HTMLElement, {
+                  scale: 2, // 提高导出分辨率
+                  useCORS: true, // 允许跨域图片
+                  allowTaint: true, // 允许跨域图片污染画布
+                  backgroundColor: null, // 保持透明背景
+                  logging: true, // 启用日志
+                  onclone: (clonedDoc) => {
+                    // 在克隆的文档中确保所有字体和图标都已加载
+                    const clonedElement = clonedDoc.querySelector(exportElement!.tagName);
+                    if (clonedElement) {
+                      // 确保克隆的元素保持原始尺寸
+                      clonedElement.style.width = `${width}px`;
+                      clonedElement.style.height = `${height}px`;
+                      
+                      // 强制应用所有计算样式
+                      const computedStyle = window.getComputedStyle(exportElement!);
+                      Array.from(computedStyle).forEach(key => {
+                        clonedElement.style.setProperty(key, computedStyle.getPropertyValue(key));
+                      });
+                    }
+                  }
+                }).then(canvas => {
+                  // 创建下载链接
+                  const link = document.createElement('a');
+                  link.download = `${scene}-poster.png`;
+                  link.href = canvas.toDataURL('image/png', 1.0);
+                  
+                  // 触发下载
+                  link.click();
+                  console.log('海报导出成功');
+                  
+                  // 恢复原始尺寸
+                  exportElement!.style.width = originalWidth;
+                  exportElement!.style.height = originalHeight;
+                }).catch(err => {
+                  console.error('html2canvas导出失败:', err);
+                  // 恢复原始尺寸
+                  exportElement!.style.width = originalWidth;
+                  exportElement!.style.height = originalHeight;
+                  
+                  // 回退到导出HTML
+                  exportAsHtml();
+                });
+              }).catch(err => {
+                console.error('等待资源加载失败:', err);
+                // 恢复原始尺寸
+                exportElement!.style.width = originalWidth;
+                exportElement!.style.height = originalHeight;
+                
+                // 回退到导出HTML
+                exportAsHtml();
+              });
             } else {
               console.warn('未找到可导出元素，尝试导出整个iframe');
               window.html2canvas!(iframe.contentDocument.body).then(canvas => {
@@ -829,6 +899,7 @@ ${fullPrompt.用户输入.内容}
 <head>
   <meta charset="UTF-8">
   <title>${scene}-poster</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <style>
     body {
       margin: 0;
@@ -844,6 +915,14 @@ ${fullPrompt.用户输入.内容}
       ${scene === 'xiaohongshu' ? 'width: 600px; height: 800px;' : 
         scene === 'wechat' ? 'width: 1200px; height: 358px;' : 
         scene === 'bilibili' ? 'width: 800px; height: 500px;' : ''}
+    }
+    /* 确保Font Awesome图标正确显示 */
+    .fas, .far, .fab {
+      display: inline-block;
+      width: 1em;
+      height: 1em;
+      line-height: 1;
+      vertical-align: middle;
     }
   </style>
 </head>
@@ -1514,8 +1593,8 @@ ${fullPrompt.用户输入.内容}
         {isGenerating && (
           <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-slate-950 bg-opacity-90">
             <div className="animate-spin rounded-full h-20 w-20 border-t-2 border-b-2 border-cyan-500 mb-4"></div>
-            <p className="text-slate-300">易美小助手正在帮你变好看，请稍等...✨</p>
-            <p className="text-slate-400 text-sm mt-2">不满意？别担心，就像抽盲盒一样，多试几次总会遇到“隐藏款”！😎</p>
+            <p className="text-slate-300">1Cool正在帮你变好看，请稍等...✨</p>
+            <p className="text-slate-400 text-sm mt-2">不满意？别担心，就像抽盲盒一样，多试几次总会遇到"隐藏款"！😎</p>
           </div>
         )}
         
@@ -1602,18 +1681,7 @@ ${fullPrompt.用户输入.内容}
           }}
         ></div>
         
-        {/* 未生成内容且不在生成过程中时显示预览 */}
-        {!generatedHtml && !isGenerating && (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <PosterPreview 
-              language={language}
-              scene={scene}
-              style={style}
-              text={text}
-              loading={isGenerating}
-            />
-          </div>
-        )}
+        {/* 移除预览内容展示 */}
       </div>
     );
   };

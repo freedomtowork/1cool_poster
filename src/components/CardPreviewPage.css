@@ -1,0 +1,265 @@
+/* 卡片预览页面样式 */
+.card-preview-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    padding-top: 90px; /* 为固定导航栏添加顶部填充 */
+    min-height: 100vh;
+    background-color: #f8f9fa;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  @media (max-width: 767px) {
+    .card-preview-container {
+      padding-top: 120px; /* 移动端导航栏更高，增加填充 */
+    }
+  }
+  
+  html.dark .card-preview-container {
+    background-color: #1a1a2e;
+    color: #e0e0e0;
+  }
+  
+  .page-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 30px;
+    text-align: center;
+    color: #333;
+    transition: color 0.3s ease;
+  }
+  
+  html.dark .page-title {
+    color: #f0f0f0;
+  }
+  
+  /* 标签导航 - 已修改 */
+  .tab-nav {
+    display: flex;
+    justify-content: center; /* 居中 Tab 按钮 */
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eaeaea; /* 保留底部分隔线 */
+  }
+  
+  .dark-mode .tab-nav { /* 注意：你的 HTML 结构用的是 html.dark，这个选择器可能不会生效 */
+    border-bottom-color: #333;
+  }
+  /* 建议使用 html.dark */
+  html.dark .tab-nav {
+      border-bottom-color: #333;
+  }
+  
+  
+  .tab-button {
+    padding: 10px 20px;
+    background: none;
+    border: none;
+    color: #555;
+    font-size: 16px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent; /* 下划线效果 */
+    transition: all 0.3s ease;
+    white-space: nowrap;
+  }
+  
+  html.dark .tab-button {
+    color: #aaa;
+  }
+  
+  .tab-button:hover {
+    color: #1a73e8;
+  }
+  
+  html.dark .tab-button:hover {
+    color: #60a5fa;
+  }
+  
+  .tab-button.active {
+    color: #1a73e8;
+    border-bottom-color: #1a73e8; /* 激活时显示下划线 */
+    font-weight: 500;
+  }
+  
+  html.dark .tab-button.active {
+    color: #60a5fa;
+    border-bottom-color: #60a5fa; /* 激活时显示下划线 */
+  }
+  
+  /* 标签内容 */
+  .tab-content {
+    position: relative;
+    min-height: 500px; /* 确保有足够的高度容纳标签内容 */
+  }
+  
+  .tab-pane {
+    opacity: 0;
+    visibility: hidden;
+    position: absolute;
+    width: 100%;
+    height: 0;
+    overflow: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+  
+  /* 活动的 Tab 面板样式 - 已修改 */
+  .tab-pane.active {
+    opacity: 1;
+    visibility: visible;
+    position: relative;
+    height: auto;
+    overflow: visible;
+  
+
+  }
+  
+  /* 活动的 Tab 面板暗黑模式样式 - 已添加 */
+  html.dark .tab-pane.active {
+    border-color: #333;
+  }
+  
+  /* 卡片画廊 */
+  .card-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+    gap: 30px;
+    /* margin-bottom: 40px; */ /* 父级加了 padding，此 margin 可能需要调整或移除 */
+    transition: opacity 0.3s ease;
+  }
+  
+  @media (max-width: 767px) {
+    .card-gallery {
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+  }
+  
+  /* 卡片包装器 */
+  .card-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    overflow: hidden; /* 防止内容溢出 */
+    max-width: 100%; /* 确保不会超出父容器宽度 */
+  }
+  
+  .card-wrapper:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+  
+  html.dark .card-wrapper {
+    background-color: #252540;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* 卡片风格名称 */
+  .card-style-name {
+    margin-top: 15px;
+    padding: 5px 10px;
+    background-color: #f0f2f5;
+    color: #666;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 4px;
+    text-align: center;
+  }
+  
+  html.dark .card-style-name {
+    background-color: #333345;
+    color: #aaa;
+  }
+  
+  /* 确保卡片内部内容不会溢出 */
+  .card-wrapper > div {
+    max-width: 100%;
+    max-height: 100%;
+  }
+  
+  /* 移动端适配 */
+  @media (max-width: 480px) {
+    .page-title {
+      font-size: 24px;
+    }
+  
+    .tab-button {
+      padding: 8px 15px;
+      font-size: 14px;
+    }
+  
+    .card-gallery {
+      grid-template-columns: 1fr;
+    }
+  
+    .card-wrapper {
+      padding: 10px;
+    }
+  
+    .card-style-name {
+      font-size: 12px;
+      padding: 4px 8px;
+    }
+  
+    /* 移动端可能也需要调整 tab-pane 的 padding */
+    .tab-pane.active {
+      padding: 15px;
+      margin-top: 15px;
+    }
+  }
+  
+  /* 确保卡片内部内容不会溢出 */
+  .card-inner-content {
+    max-width: 100%;
+    max-height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+  
+  .card-inner-content > div {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  /* --- 以下是重复的暗黑模式规则，可以考虑合并或确认优先级 --- */
+  /* --- 例如，html.dark .xxx 优先级高于 .dark-mode .xxx --- */
+  /*
+  .dark-mode {
+    background-color: #1a1a2e;
+    color: #e0e0e0;
+  }
+  
+  .dark-mode .page-title {
+    color: #f0f0f0;
+  }
+  
+  .dark-mode .tab-nav {
+    border-bottom-color: #333;
+  }
+  
+  
+  .dark-mode .tab-button {
+    color: #aaa;
+  }
+  
+  .dark-mode .tab-button:hover {
+    color: #60a5fa;
+  }
+  
+  .dark-mode .tab-button.active {
+    color: #60a5fa;
+    border-bottom-color: #60a5fa;
+  }
+  
+  .dark-mode .card-wrapper {
+    background-color: #252540;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+  */
+  /* --- 结束重复规则 --- */

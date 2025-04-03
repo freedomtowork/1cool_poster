@@ -41,7 +41,7 @@ const StyleSelector: React.FC<StyleSelectorProps> = ({
     },
     { 
       id: 'business_info', 
-      name: '现代商务资讯卡片风', 
+      name: '现代商务资讯风', 
       englishName: 'Modern Business Info',
       description: '专业商务信息展示', 
       englishDescription: 'Professional business display',
@@ -61,7 +61,7 @@ const StyleSelector: React.FC<StyleSelectorProps> = ({
     },
     { 
       id: 'minimalist_grid', 
-      name: '极简格栅主义封面风格', 
+      name: '极简格栅主义风', 
       englishName: 'Minimalist Grid Cover',
       description: '简约网格设计', 
       englishDescription: 'Simple grid design',
@@ -121,7 +121,7 @@ const StyleSelector: React.FC<StyleSelectorProps> = ({
     },
     { 
       id: 'business_simple', 
-      name: '商务简约信息卡片风', 
+      name: '商务简约信息风', 
       englishName: 'Business Simple Info Card',
       description: '简约商务信息展示', 
       englishDescription: 'Simple business info display',

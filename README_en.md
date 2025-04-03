@@ -1,6 +1,6 @@
 [![中文文档](https://img.shields.io/badge/Documentation-中文-blue.svg)](README.md)
 
-# Multilingual Poster Generator
+# 1Cool Poster Generator
 
 A powerful AI-based poster generation tool for creating beautiful posters and cover images for different platforms.
 

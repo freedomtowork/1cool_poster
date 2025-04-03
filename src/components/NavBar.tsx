@@ -26,7 +26,7 @@ const NavBar: React.FC<NavBarProps> = ({ activeTab, onTabChange }) => {
   // 定义导航项
   const navItems: NavItem[] = [
     { path: '/', label: '封面', tabId: 'cover' },
-    { path: '/', label: '正文', tabId: 'content' },
+    // { path: '/', label: '正文', tabId: 'content' },
     { path: '/card-preview', label: '卡片', icon: <CreditCard className="h-4 w-4" /> }
   ];
   

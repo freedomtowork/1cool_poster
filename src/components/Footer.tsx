@@ -9,9 +9,9 @@ const Footer = () => {
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="mb-6 md:mb-0">
-            <span className="text-xl font-semibold text-primary">PosterAI</span>
+            <span className="text-xl font-semibold text-primary">1Cool</span>
             <p className="text-sm text-muted-foreground mt-2">
-              Create beautiful multilingual AI posters in seconds.
+              Create beautiful AI posters in seconds.
             </p>
           </div>
           
@@ -47,7 +47,7 @@ const Footer = () => {
         
         <div className="mt-10 pt-5 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center">
           <p className="text-sm text-muted-foreground">
-            © {currentYear} PosterAI. All rights reserved.
+            © {currentYear} 1Cool. All rights reserved.
           </p>
           
           <div className="flex space-x-6 mt-4 md:mt-0">

@@ -57,8 +57,18 @@ const mapStyleId = (styleId: string): string => {
 
 // 导入html2canvas类型
 declare global {
+  interface Html2CanvasOptions {
+    scale?: number;
+    useCORS?: boolean;
+    allowTaint?: boolean;
+    backgroundColor?: string | null;
+    logging?: boolean;
+    onclone?: (doc: Document) => void;
+    [key: string]: unknown;
+  }
+  
   interface Window {
-    html2canvas?: (element: HTMLElement) => Promise<HTMLCanvasElement>;
+    html2canvas?: (element: HTMLElement, options?: Html2CanvasOptions) => Promise<HTMLCanvasElement>;
   }
 }
 
@@ -79,14 +89,34 @@ const PosterGenerator = () => {
   // 模型配置状态
   const [modelConfig, setModelConfig] = useState<ModelConfig>(() => {
     const savedConfig = localStorage.getItem('modelConfig');
-    return savedConfig 
-      ? JSON.parse(savedConfig) 
-      : {
-          apiKey: '',
-          apiUrl: 'https://api.silicon.run',
-          model: 'deepseek/deepseek-chat-v3-0324:free',
-          isConfigured: false
-        };
+    
+    // 如果有保存的配置，优先使用保存的配置
+    if (savedConfig) {
+      return JSON.parse(savedConfig);
+    }
+    
+    // 否则，检查是否有环境变量中的配置
+    const envApiKey = import.meta.env.VITE_DEFAULT_API_KEY || '';
+    const envApiUrl = import.meta.env.VITE_DEFAULT_API_URL || '';
+    const envModel = import.meta.env.VITE_DEFAULT_MODEL || '';
+    
+    // 如果环境变量中设置了API键，使用环境变量配置
+    if (envApiKey) {
+      return {
+        apiKey: envApiKey,
+        apiUrl: envApiUrl || 'https://api.silicon.run',
+        model: envModel || 'Pro/deepseek-ai/DeepSeek-V3',
+        isConfigured: true
+      };
+    }
+    
+    // 默认配置
+    return {
+      apiKey: '',
+      apiUrl: 'https://api.silicon.run',
+      model: 'deepseek/deepseek-chat-v3-0324:free',
+      isConfigured: false
+    };
   });
 
   // 当配置变更时保存到本地存储
@@ -241,17 +271,24 @@ ${fullPrompt.用户输入.内容}
   // 调用API生成海报
   const generatePoster = async (prompt: string) => {
     try {
-      // 根据配置的API地址决定使用哪个API端点
-      const isOpenRouter = modelConfig.apiUrl === 'https://openrouter.ai/api/v1/chat/completions';
+      // 检测提供商类型
+      const isOpenRouter = modelConfig.apiUrl.includes('openrouter.ai/api/v1');
       const isSiliconRun = modelConfig.apiUrl.includes('silicon.run');
+      const isGemini = modelConfig.apiUrl.includes('generativelanguage.googleapis.com');
+      const isAnthropic = modelConfig.apiUrl.includes('api.anthropic.com');
       
-      // 准备API URL - 尊重自定义URL配置
+      // 准备API URL - 根据不同提供商使用不同的端点
       let apiUrl = modelConfig.apiUrl;
       
-      // 如果是预设URL，需要格式化添加endpoint
+      // 为不同的提供商添加正确的端点
       if (isSiliconRun && !modelConfig.apiUrl.includes('/chat/completions')) {
         apiUrl = `${modelConfig.apiUrl}/chat/completions`;
+      } else if (isOpenRouter && !modelConfig.apiUrl.includes('/chat/completions')) {
+        apiUrl = `${modelConfig.apiUrl}/chat/completions`;
+      } else if (isAnthropic && !modelConfig.apiUrl.includes('/messages')) {
+        apiUrl = `${modelConfig.apiUrl}/messages`;
       }
+      // Gemini 使用不同的端点格式，不添加/chat/completions
       
       console.log('调用API参数:', {
         url: apiUrl,
@@ -273,8 +310,22 @@ ${fullPrompt.用户输入.内容}
         // 准备请求头部
         const headers: Record<string, string> = {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${modelConfig.apiKey}`
         };
+        
+        // 根据不同提供商设置不同的认证方式
+        if (isGemini) {
+          // Gemini通常在URL中使用API密钥作为查询参数
+          if (!apiUrl.includes('?key=')) {
+            // 添加API密钥作为查询参数
+            apiUrl = `${apiUrl}?key=${modelConfig.apiKey}`;
+          }
+        } else if (isAnthropic) {
+          // Anthropic使用x-api-key头
+          headers['x-api-key'] = modelConfig.apiKey;
+        } else {
+          // OpenAI/OpenRouter/硅肌流动使用Bearer认证
+          headers['Authorization'] = `Bearer ${modelConfig.apiKey}`;
+        }
         
         // 如果是OpenRouter API，添加额外的头部
         if (isOpenRouter) {
@@ -288,18 +339,45 @@ ${fullPrompt.用户输入.内容}
         // 准备系统提示
         const systemPrompt = "You are a professional web designer, skilled at creating beautiful HTML posters.";
         
-        // 创建请求对象
-        const requestData = {
-          model: modelConfig.model,
-          messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: prompt }
-          ],
-          temperature: 0.7,
-          max_tokens: 10000,
-        };
+        // 创建请求对象 - 根据不同提供商使用不同的请求结构
+        type RequestData = Record<string, unknown>;
+        let requestData: RequestData = {};
+        
+        if (isAnthropic) {
+          // Anthropic API请求格式
+          requestData = {
+            model: modelConfig.model,
+            messages: [
+              { role: "user", content: `${systemPrompt}\n\n${prompt}` }
+            ],
+            max_tokens: 10000,
+          };
+        } else if (isGemini) {
+          // Gemini API请求格式
+          requestData = {
+            contents: [
+              { role: "user", parts: [{ text: `${systemPrompt}\n\n${prompt}` }] }
+            ],
+            generationConfig: {
+              temperature: 0.7,
+              maxOutputTokens: 10000,
+            },
+          };
+        } else {
+          // OpenAI/OpenRouter/硅肌流动兼容格式
+          requestData = {
+            model: modelConfig.model,
+            messages: [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: prompt }
+            ],
+            temperature: 0.7,
+            max_tokens: 10000,
+          };
+        }
 
         console.log('发送请求到:', apiUrl);
+        console.log('请求数据结构:', requestData);
         
         // 发送请求
         const response = await axios.post(apiUrl, requestData, { headers });
@@ -314,40 +392,57 @@ ${fullPrompt.用户输入.内容}
         // 从响应中提取HTML
         let htmlContent = '';
         
-        // 检查响应数据的类型和结构
-        if (typeof response.data === 'string') {
-          // 如果响应是字符串，可能是JSON字符串
-          try {
-            const jsonData = JSON.parse(response.data);
-            if (jsonData.choices && jsonData.choices[0] && jsonData.choices[0].message && jsonData.choices[0].message.content) {
-              htmlContent = jsonData.choices[0].message.content;
-              console.log('从JSON字符串中提取HTML内容');
-            } else {
-              htmlContent = response.data;
-              console.log('响应是字符串但不是预期的JSON格式，使用原始字符串');
+        // 根据不同的提供商处理不同格式的响应
+        if (isGemini) {
+          // Gemini响应格式
+          if (response.data.candidates && response.data.candidates[0] && response.data.candidates[0].content) {
+            const parts = response.data.candidates[0].content.parts;
+            if (parts && parts.length > 0) {
+              htmlContent = parts[0].text || '';
             }
-          } catch (e) {
-            // 解析JSON失败，可能是纯HTML字符串
-            htmlContent = response.data;
-            console.log('响应是字符串但不是JSON，使用原始字符串');
           }
-        } else if (response.data.choices && response.data.choices[0] && response.data.choices[0].message) {
-          // 标准API响应结构
-          htmlContent = response.data.choices[0].message.content;
-          console.log('从标准API响应结构中提取HTML内容');
+        } else if (isAnthropic) {
+          // Anthropic响应格式
+          if (response.data.content && response.data.content.length > 0) {
+            htmlContent = response.data.content[0].text || '';
+          }
         } else {
-          // 其他情况，尝试检查响应中的内容字段
-          if (response.data.content) {
-            htmlContent = response.data.content;
-            console.log('从content字段提取HTML内容');
-          } else if (response.data.html) {
-            htmlContent = response.data.html;
-            console.log('从html字段提取HTML内容');
+          // OpenAI/OpenRouter/硅肌流动兼容格式
+          // 检查响应数据的类型和结构
+          if (typeof response.data === 'string') {
+            // 如果响应是字符串，可能是JSON字符串
+            try {
+              const jsonData = JSON.parse(response.data);
+              if (jsonData.choices && jsonData.choices[0] && jsonData.choices[0].message && jsonData.choices[0].message.content) {
+                htmlContent = jsonData.choices[0].message.content;
+                console.log('从JSON字符串中提取HTML内容');
+              } else {
+                htmlContent = response.data;
+                console.log('响应是字符串但不是预期的JSON格式，使用原始字符串');
+              }
+            } catch (e) {
+              // 解析JSON失败，可能是纯HTML字符串
+              htmlContent = response.data;
+              console.log('响应是字符串但不是JSON，使用原始字符串');
+            }
+          } else if (response.data.choices && response.data.choices[0] && response.data.choices[0].message) {
+            // 标准API响应结构
+            htmlContent = response.data.choices[0].message.content;
+            console.log('从标准API响应结构中提取HTML内容');
           } else {
-            // 无法识别的响应结构，记录完整响应以便调试
-            console.warn('无法识别的响应结构:', response.data);
-            htmlContent = JSON.stringify(response.data);
-            console.log('使用完整响应作为内容');
+            // 其他情况，尝试检查响应中的内容字段
+            if (response.data.content) {
+              htmlContent = response.data.content;
+              console.log('从content字段提取HTML内容');
+            } else if (response.data.html) {
+              htmlContent = response.data.html;
+              console.log('从html字段提取HTML内容');
+            } else {
+              // 无法识别的响应结构，记录完整响应以便调试
+              console.warn('无法识别的响应结构:', response.data);
+              htmlContent = JSON.stringify(response.data);
+              console.log('使用完整响应作为内容');
+            }
           }
         }
         
@@ -777,7 +872,7 @@ ${fullPrompt.用户输入.内容}
               // 执行导出流程
               waitForResources().then(() => {
                 // 使用html2canvas导出，添加更多选项以提高精确度
-                window.html2canvas!(exportElement as HTMLElement, {
+                const canvas = window.html2canvas!(exportElement as HTMLElement, {
                   scale: 2, // 提高导出分辨率
                   useCORS: true, // 允许跨域图片
                   allowTaint: true, // 允许跨域图片污染画布
@@ -788,17 +883,18 @@ ${fullPrompt.用户输入.内容}
                     const clonedElement = clonedDoc.querySelector(exportElement!.tagName);
                     if (clonedElement) {
                       // 确保克隆的元素保持原始尺寸
-                      clonedElement.style.width = `${width}px`;
-                      clonedElement.style.height = `${height}px`;
+                      (clonedElement as HTMLElement).style.width = `${width}px`;
+                      (clonedElement as HTMLElement).style.height = `${height}px`;
                       
                       // 强制应用所有计算样式
                       const computedStyle = window.getComputedStyle(exportElement!);
                       Array.from(computedStyle).forEach(key => {
-                        clonedElement.style.setProperty(key, computedStyle.getPropertyValue(key));
+                        (clonedElement as HTMLElement).style.setProperty(key, computedStyle.getPropertyValue(key));
                       });
                     }
                   }
-                }).then(canvas => {
+                });
+                canvas.then(canvas => {
                   // 创建下载链接
                   const link = document.createElement('a');
                   link.download = `${scene}-poster.png`;
@@ -945,6 +1041,7 @@ ${fullPrompt.用户输入.内容}
   };
 
   const handleConfigChange = (newConfig: ModelConfig) => {
+    // 直接使用用户输入的URL，不自动修改
     setModelConfig(newConfig);
   };
 

@@ -21,6 +21,12 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2 } from "lucide-react";
 
+// 默认环境变量配置
+const ENV_DEFAULT_API_KEY = import.meta.env.VITE_DEFAULT_API_KEY || '';
+const ENV_DEFAULT_API_URL = import.meta.env.VITE_DEFAULT_API_URL || '';
+const ENV_DEFAULT_MODEL = import.meta.env.VITE_DEFAULT_MODEL || '';
+const ENV_DEFAULT_PROVIDER = import.meta.env.VITE_DEFAULT_PROVIDER || '';
+
 export type ModelConfig = {
   apiKey: string;
   apiUrl: string;
@@ -95,9 +101,14 @@ const ModelConfigDialog: React.FC<ModelConfigDialogProps> = ({
         const data = await response.json();
         setProvidersConfig(data);
         
-        // 设置默认提供商，如果当前未设置
+        // 设置默认提供商，优先使用环境变量中的提供商
         if (!selectedProvider) {
-          setSelectedProvider(data.defaultProvider);
+          // 如果环境变量中有指定的提供商，且该提供商在配置中存在，则使用环境变量中的提供商
+          if (ENV_DEFAULT_PROVIDER && data.providers[ENV_DEFAULT_PROVIDER]) {
+            setSelectedProvider(ENV_DEFAULT_PROVIDER);
+          } else {
+            setSelectedProvider(data.defaultProvider);
+          }
         }
       } catch (error) {
         console.error('加载模型配置文件失败:', error);
@@ -114,37 +125,64 @@ const ModelConfigDialog: React.FC<ModelConfigDialogProps> = ({
   useEffect(() => {
     if (!providersConfig) return;
     
-    setApiKey(config.apiKey);
+    // 优先使用环境变量中的API密钥(仅在首次加载或config.apiKey为空时)
+    if (!config.apiKey && ENV_DEFAULT_API_KEY) {
+      setApiKey(ENV_DEFAULT_API_KEY);
+    } else {
+      setApiKey(config.apiKey);
+    }
     
     // 尝试根据API URL和模型识别提供商
     let detectedProvider: ModelProvider = 'custom';
     let modelToSet = config.model || '';
+    let apiUrlToSet = config.apiUrl || '';
     
-    // 检查URL是否匹配某个提供商
-    for (const [providerKey, providerData] of Object.entries(providersConfig.providers)) {
-      if (providerKey !== 'custom' && config.apiUrl?.includes(providerData.url)) {
-        detectedProvider = providerKey;
-        
-        // 检查模型是否存在于该提供商的模型列表中
-        const modelExists = providerData.models.some(m => m.id === config.model);
-        if (modelExists) {
-          modelToSet = config.model;
-        } else {
-          // 如果模型不在提供商列表中，但URL匹配，设为自定义模型
-          setCustomModelInput(config.model || '');
+    // 如果是首次配置，并且有环境变量设置的默认值
+    if (!config.isConfigured && ENV_DEFAULT_API_URL) {
+      apiUrlToSet = ENV_DEFAULT_API_URL;
+      if (ENV_DEFAULT_MODEL) {
+        modelToSet = ENV_DEFAULT_MODEL;
+      }
+      
+      // 如果有环境变量设置的提供商，直接使用
+      if (ENV_DEFAULT_PROVIDER && providersConfig.providers[ENV_DEFAULT_PROVIDER]) {
+        detectedProvider = ENV_DEFAULT_PROVIDER;
+      } else {
+        // 否则尝试根据URL识别提供商
+        for (const [providerKey, providerData] of Object.entries(providersConfig.providers)) {
+          if (providerKey !== 'custom' && ENV_DEFAULT_API_URL.includes(providerData.url)) {
+            detectedProvider = providerKey;
+            break;
+          }
         }
-        break;
+      }
+    } else {
+      // 检查URL是否匹配某个提供商
+      for (const [providerKey, providerData] of Object.entries(providersConfig.providers)) {
+        if (providerKey !== 'custom' && config.apiUrl?.includes(providerData.url)) {
+          detectedProvider = providerKey;
+          
+          // 检查模型是否存在于该提供商的模型列表中
+          const modelExists = providerData.models.some(m => m.id === config.model);
+          if (modelExists) {
+            modelToSet = config.model;
+          } else {
+            // 如果模型不在提供商列表中，但URL匹配，设为自定义模型
+            setCustomModelInput(config.model || '');
+          }
+          break;
+        }
       }
     }
     
     // 如果没有匹配任何提供商，设为自定义
     if (detectedProvider === 'custom') {
-      setCustomUrlInput(config.apiUrl || '');
-      setCustomModelInput(config.model || '');
+      setCustomUrlInput(apiUrlToSet);
+      setCustomModelInput(modelToSet);
     }
     
     setSelectedProvider(detectedProvider);
-    setApiUrl(config.apiUrl || '');
+    setApiUrl(apiUrlToSet);
     setModel(modelToSet);
   }, [config, isOpen, providersConfig]);
 
@@ -393,11 +431,11 @@ const ModelConfigDialog: React.FC<ModelConfigDialogProps> = ({
                           <Input
                             value={customUrlInput}
                             onChange={(e) => setCustomUrlInput(e.target.value)}
-                            placeholder="输入完整的API地址"
+                            placeholder="输入API基础地址"
                             className="w-full bg-slate-700 border-slate-600 text-slate-200"
                           />
                           <p className="text-xs text-slate-400 mt-1">
-                            例如: https://api.example.com/v1
+                            例如: https://api.example.com/v1/chat/completions
                           </p>
                         </div>
                         

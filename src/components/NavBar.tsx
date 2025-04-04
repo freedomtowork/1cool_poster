@@ -56,7 +56,7 @@ const NavBar: React.FC<NavBarProps> = ({ activeTab, onTabChange }) => {
         {isMobile ? (
           <>
             <div className="flex w-full justify-between items-center mb-2">
-              <h1 className="text-xl font-bold text-primary">1Cool</h1>
+              <img src="/logo1.png" alt="Logo" className="h-10" />
               {/* 主题切换按钮 - 移动版 */}
               <Button
                 variant="outline"
@@ -86,7 +86,7 @@ const NavBar: React.FC<NavBarProps> = ({ activeTab, onTabChange }) => {
         ) : (
           /* 桌面端显示水平布局 */
           <>
-            <h1 className="text-xl font-bold text-primary mr-6">1Cool</h1>
+            <img src="/logo1.png" alt="Logo" className="h-10 mr-0" />
             <div className="flex-1 flex justify-center">
               <div className="flex space-x-4">
                 {navItems.map((item, index) => (

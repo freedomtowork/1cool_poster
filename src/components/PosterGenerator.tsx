@@ -1785,7 +1785,7 @@ ${fullPrompt.用户输入.内容}
 
   if (isMobile) {
     return (
-      <div className="flex flex-col h-full p-4">
+      <div className="flex flex-col min-h-screen h-full p-4 overflow-y-auto">
         {/* Text Input for mobile view */}
         <div className="glass-card rounded-xl p-4 mb-6">
           <h3 className="text-lg font-medium mb-4 text-slate-200">
@@ -1879,9 +1879,9 @@ ${fullPrompt.用户输入.内容}
   }
 
   return (
-    <div className="flex h-full">
+    <div className="flex h-screen">
       {/* Left column - Text Input Panel */}
-      <div className="w-1/4 bg-slate-900 p-4 pt-6 overflow-y-auto">
+      <div className="w-1/4 bg-slate-900 p-4 pt-6 overflow-y-auto h-full">
         <div className="h-full flex flex-col">
           <h3 className="text-lg font-medium mb-4 text-slate-200">
             输入文字
@@ -1890,7 +1890,7 @@ ${fullPrompt.用户输入.内容}
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder={placeholderText}
-            className="flex-1 min-h-[calc(100vh-250px)] mb-4 bg-slate-800 border-slate-700 text-slate-200 placeholder:text-slate-500"
+            className="flex-1 min-h-[120px] max-h-[calc(100vh-250px)] mb-2 bg-slate-800 border-slate-700 text-slate-200 placeholder:text-slate-500"
           />
           <div className="text-xs text-slate-400 italic mb-4">
             提示：使用上述格式可让AI更好地理解您的内容结构
@@ -1919,7 +1919,7 @@ ${fullPrompt.用户输入.内容}
       </div>
       
       {/* Middle column - Platform tabs and Canvas */}
-      <div className="w-2/4 flex flex-col p-4 bg-slate-950">
+      <div className="w-2/4 flex flex-col p-4 bg-slate-950 h-full">
         {/* Poster preview */}
         {renderMiddleColumn()}
         
@@ -1937,7 +1937,7 @@ ${fullPrompt.用户输入.内容}
       </div>
       
       {/* Right column - Style selector and Generate button */}
-      <div className="w-1/4 bg-slate-900 p-4 pt-6 overflow-y-auto">
+      <div className="w-1/4 bg-slate-900 p-4 pt-6 overflow-y-auto h-full">
         <div className="glass-card rounded-xl p-4 md:p-6 mb-6">
           <h3 className="text-lg font-medium mb-4 text-slate-200">
             选择风格

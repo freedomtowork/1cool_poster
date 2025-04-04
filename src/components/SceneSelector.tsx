@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Check } from 'lucide-react';
 
@@ -13,6 +12,8 @@ type SceneSelectorProps = {
   selectedScene: string;
   selectedLanguage: string;
   onSceneChange: (sceneId: string) => void;
+  hideDescription?: boolean;
+  displayInline?: boolean;
 };
 
 // This component is now only used as a fallback - we've replaced it with tabs in PosterGenerator
@@ -20,6 +21,8 @@ const SceneSelector: React.FC<SceneSelectorProps> = ({
   selectedScene,
   selectedLanguage,
   onSceneChange,
+  hideDescription = false,
+  displayInline = false,
 }) => {
   // Define scenes based on language
   const scenes: Scene[] = React.useMemo(() => {
@@ -47,27 +50,32 @@ const SceneSelector: React.FC<SceneSelectorProps> = ({
   }, [selectedLanguage, selectedScene, scenes, onSceneChange]);
 
   return (
-    <div className="space-y-2">
-      <div className="grid grid-cols-1 gap-3">
+    <div className={`${displayInline ? "grid grid-cols-3 gap-2" : "space-y-2"}`}>
+      <div className={`${displayInline ? "contents" : "grid grid-cols-1 gap-3"}`}>
         {scenes.map((scene) => (
           <button
             key={scene.id}
             onClick={() => onSceneChange(scene.id)}
-            className={`text-left px-4 py-3 rounded-xl transition-all duration-300 relative 
+            className={`text-left px-3 py-2 rounded-xl transition-all duration-300 relative 
               ${selectedScene === scene.id
                 ? 'bg-slate-700/60 ring-1 ring-primary/50'
                 : 'bg-slate-800/60 hover:bg-slate-700/40'
-              }`}
+              } ${displayInline ? 'flex flex-col items-center justify-center' : ''}`}
           >
-            <div className="flex items-center justify-between">
-              <div>
+            <div className={`flex items-center ${displayInline ? 'justify-center' : 'justify-between'}`}>
+              <div className={displayInline ? 'text-center' : ''}>
                 <div className="font-medium text-slate-200">{scene.name}</div>
-                <span className="text-sm text-slate-400">{scene.description}</span>
+                {!hideDescription && (
+                  <span className="text-sm text-slate-400">{scene.description}</span>
+                )}
               </div>
-              {selectedScene === scene.id && (
+              {selectedScene === scene.id && !displayInline && (
                 <Check size={16} className="text-primary" />
               )}
             </div>
+            {selectedScene === scene.id && displayInline && (
+              <Check size={16} className="text-primary mt-1" />
+            )}
           </button>
         ))}
       </div>

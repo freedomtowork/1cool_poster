@@ -1820,8 +1820,8 @@ ${fullPrompt.用户输入.内容}
         </div>
         
         {/* Style Selector */}
-        <div className="glass-card rounded-xl p-4 mb-6">
-          <h3 className="text-lg font-medium mb-4 text-slate-200">
+        <div className="glass-card rounded-xl p-3 md:p-4 mb-4">
+          <h3 className="text-lg font-medium mb-3 text-slate-200">
             选择风格
           </h3>
           <StyleSelector 
@@ -1832,14 +1832,16 @@ ${fullPrompt.用户输入.内容}
         </div>
         
         {/* Scene Selector */}
-        <div className="glass-card rounded-xl p-4 mb-6">
-          <h3 className="text-lg font-medium mb-4 text-slate-200">
+        <div className="glass-card rounded-xl p-3 md:p-4 mb-4">
+          <h3 className="text-lg font-medium mb-3 text-slate-200">
             选择平台
           </h3>
           <SceneSelector 
             selectedScene={scene}
             selectedLanguage={language}
             onSceneChange={setScene}
+            hideDescription={true}
+            displayInline={true}
           />
         </div>
         
@@ -1847,7 +1849,7 @@ ${fullPrompt.用户输入.内容}
         <Button 
           onClick={handleGenerate} 
           disabled={isGenerating} 
-          className="w-full mb-6 bg-cyan-500 hover:bg-cyan-600 text-white"
+          className="w-full mb-4 bg-cyan-500 hover:bg-cyan-600 text-white"
         >
           {isGenerating ? '生成中...' : '生成封面'}
         </Button>
@@ -1890,7 +1892,7 @@ ${fullPrompt.用户输入.内容}
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder={placeholderText}
-            className="flex-1 min-h-[120px] max-h-[calc(100vh-250px)] mb-2 bg-slate-800 border-slate-700 text-slate-200 placeholder:text-slate-500"
+            className="flex-1 min-h-[100px] max-h-[calc(100vh-250px)] mb-2 bg-slate-800 border-slate-700 text-slate-200 placeholder:text-slate-500"
           />
           <div className="text-xs text-slate-400 italic mb-4">
             提示：使用上述格式可让AI更好地理解您的内容结构
@@ -1938,8 +1940,8 @@ ${fullPrompt.用户输入.内容}
       
       {/* Right column - Style selector and Generate button */}
       <div className="w-1/4 bg-slate-900 p-4 pt-6 overflow-y-auto h-full">
-        <div className="glass-card rounded-xl p-4 md:p-6 mb-6">
-          <h3 className="text-lg font-medium mb-4 text-slate-200">
+        <div className="glass-card rounded-xl p-3 md:p-4 mb-4">
+          <h3 className="text-lg font-medium mb-3 text-slate-200">
             选择风格
           </h3>
           <StyleSelector 
@@ -1949,21 +1951,23 @@ ${fullPrompt.用户输入.内容}
           />
         </div>
         
-        <div className="glass-card rounded-xl p-4 md:p-6 mb-6">
-          <h3 className="text-lg font-medium mb-4 text-slate-200">
+        <div className="glass-card rounded-xl p-3 md:p-4 mb-4">
+          <h3 className="text-lg font-medium mb-3 text-slate-200">
             选择平台
           </h3>
           <SceneSelector 
             selectedScene={scene}
             selectedLanguage={language}
             onSceneChange={setScene}
+            hideDescription={true}
+            displayInline={true}
           />
         </div>
         
         <Button 
           onClick={handleGenerate} 
           disabled={isGenerating} 
-          className="w-full mt-6 bg-cyan-500 hover:bg-cyan-600 text-white"
+          className="w-full mt-4 bg-cyan-500 hover:bg-cyan-600 text-white"
         >
           {isGenerating ? '生成中...' : '生成封面'}
         </Button>

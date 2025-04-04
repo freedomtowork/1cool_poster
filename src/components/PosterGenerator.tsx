@@ -1702,7 +1702,7 @@ ${fullPrompt.用户输入.内容}
             #poster-iframe-container {
               width: 100%;
               height: 100%;
-              min-height: 300px;
+              min-height: 200px;
               overflow: auto;
               display: flex;
               justify-content: center;
@@ -1713,7 +1713,7 @@ ${fullPrompt.用户输入.内容}
               display: block;
               width: 100%;
               height: 100%;
-              min-height: 300px;
+              min-height: 200px;
               border: none;
               background-color: white;
               overflow: hidden;
@@ -1769,7 +1769,7 @@ ${fullPrompt.用户输入.内容}
           ref={canvasRef} 
           className="w-full h-full flex items-center justify-center overflow-auto z-0"
           style={{ 
-            minHeight: '400px', 
+            minHeight: '320px', 
             border: '1px solid rgba(255,255,255,0.1)', 
             borderRadius: '8px',
             position: 'relative',
@@ -1858,14 +1858,16 @@ ${fullPrompt.用户输入.内容}
         {renderMiddleColumn()}
         
         {/* Export button */}
-        <Button 
-          onClick={handleExport} 
-          disabled={!generatedHtml || isGenerating}
-          className="w-full gap-1 bg-slate-800 hover:bg-slate-700 text-slate-200"
-        >
-          <Download className="w-4 h-4" />
-          导出
-        </Button>
+        <div className="flex justify-center mt-3">
+          <Button 
+            onClick={handleExport} 
+            disabled={!generatedHtml || isGenerating}
+            className="w-full sm:w-auto gap-1 bg-slate-800 hover:bg-slate-700 text-slate-200"
+          >
+            <Download className="w-4 h-4" />
+            导出
+          </Button>
+        </div>
 
         {/* 配置提示对话框 */}
         <ModelConfigAlert 
@@ -1892,7 +1894,7 @@ ${fullPrompt.用户输入.内容}
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder={placeholderText}
-            className="flex-1 min-h-[100px] max-h-[calc(100vh-250px)] mb-2 bg-slate-800 border-slate-700 text-slate-200 placeholder:text-slate-500"
+            className="flex-1 min-h-[100px] max-h-[calc(100vh-350px)] mb-2 bg-slate-800 border-slate-700 text-slate-100 placeholder:text-slate-500"
           />
           <div className="text-xs text-slate-400 italic mb-4">
             提示：使用上述格式可让AI更好地理解您的内容结构
@@ -1922,11 +1924,8 @@ ${fullPrompt.用户输入.内容}
       
       {/* Middle column - Platform tabs and Canvas */}
       <div className="w-2/4 flex flex-col p-4 bg-slate-950 h-full">
-        {/* Poster preview */}
-        {renderMiddleColumn()}
-        
-        {/* Export button */}
-        <div className="flex justify-center mt-6">
+       {/* Export button */}
+       <div className="flex justify-center mt-3">
           <Button 
             onClick={handleExport} 
             disabled={!generatedHtml || isGenerating}
@@ -1936,6 +1935,10 @@ ${fullPrompt.用户输入.内容}
             导出
           </Button>
         </div>
+        {/* Poster preview */}
+        {renderMiddleColumn()}
+        
+       
       </div>
       
       {/* Right column - Style selector and Generate button */}

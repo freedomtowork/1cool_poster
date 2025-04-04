@@ -86,7 +86,7 @@ const NavBar: React.FC<NavBarProps> = ({ activeTab, onTabChange }) => {
         ) : (
           /* 桌面端显示水平布局 */
           <>
-            <img src="/logo1.png" alt="Logo" className="h-10 mr-0" />
+            <img src="/logo1.png" alt="Logo" className="h-8 mr-0" />
             <div className="flex-1 flex justify-center">
               <div className="flex space-x-4">
                 {navItems.map((item, index) => (

@@ -36,7 +36,7 @@ const MainApp = () => {
   const isMobile = useIsMobile();
   const location = useLocation();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<string>('cover'); // 默认是封面标签
+  const [activeTab, setActiveTab] = useState<string>('cover'); 
 
   // 处理标签切换
   const handleTabChange = (tabId: string) => {

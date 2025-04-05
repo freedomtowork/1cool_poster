@@ -42,7 +42,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
               <nav className="space-y-4">
                 <a href="#generator" className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-secondary">
                   <Image size={20} />
-                  <span>创建封面</span>
+                  <span>创建卡片</span>
                 </a>
               </nav>
             </div>

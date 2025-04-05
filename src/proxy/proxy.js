@@ -35,7 +35,7 @@ app.post('/api/generate', async (req, res) => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${apiKey}`,
           'HTTP-Referer': 'https://multilingual-poster-gen.vercel.app/',  // 可以替换为您的实际网站
-          'X-Title': '封面生成器'
+          'X-Title': '卡片生成器'
         }
       }
     );

@@ -31,6 +31,7 @@ const SceneSelector: React.FC<SceneSelectorProps> = ({
         { id: 'xiaohongshu', name: '小红书', description: '时尚生活分享平台', languageId: 'zh' },
         { id: 'wechat', name: '微信', description: '内容创作与推广', languageId: 'zh' },
         { id: 'bilibili', name: 'B站', description: '视频内容创作', languageId: 'zh' },
+        { id: 'card', name: '卡片', description: '多场景内容卡片', languageId: 'zh' },
       ];
     } else {
       return [
@@ -50,7 +51,7 @@ const SceneSelector: React.FC<SceneSelectorProps> = ({
   }, [selectedLanguage, selectedScene, scenes, onSceneChange]);
 
   return (
-    <div className={`${displayInline ? "grid grid-cols-3 gap-2" : "space-y-2"}`}>
+    <div className={`${displayInline ? "grid grid-cols-4 gap-2" : "space-y-2"}`}>
       <div className={`${displayInline ? "contents" : "grid grid-cols-1 gap-3"}`}>
         {scenes.map((scene) => (
           <button
@@ -64,7 +65,12 @@ const SceneSelector: React.FC<SceneSelectorProps> = ({
           >
             <div className={`flex items-center ${displayInline ? 'justify-center' : 'justify-between'}`}>
               <div className={displayInline ? 'text-center' : ''}>
-                <div className="font-medium text-slate-200">{scene.name}</div>
+                <div className="font-medium text-slate-200 flex items-center">
+                  {scene.name}
+                  {selectedScene === scene.id && displayInline && (
+                    <Check size={16} className="text-primary ml-1" />
+                  )}
+                </div>
                 {!hideDescription && (
                   <span className="text-sm text-slate-400">{scene.description}</span>
                 )}
@@ -73,9 +79,6 @@ const SceneSelector: React.FC<SceneSelectorProps> = ({
                 <Check size={16} className="text-primary" />
               )}
             </div>
-            {selectedScene === scene.id && displayInline && (
-              <Check size={16} className="text-primary mt-1" />
-            )}
           </button>
         ))}
       </div>

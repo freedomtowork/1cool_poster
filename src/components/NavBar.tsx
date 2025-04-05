@@ -25,9 +25,9 @@ const NavBar: React.FC<NavBarProps> = ({ activeTab, onTabChange }) => {
   
   // 定义导航项
   const navItems: NavItem[] = [
-    { path: '/', label: '封面', tabId: 'cover' },
+    { path: '/', label: '卡片', tabId: 'cover' },
     // { path: '/', label: '正文', tabId: 'content' },
-    { path: '/card-preview', label: '卡片', icon: <CreditCard className="h-4 w-4" /> }
+    { path: '/card-preview', label: '示例', icon: <CreditCard className="h-4 w-4" /> }
   ];
   
   // 处理导航项点击

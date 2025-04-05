@@ -11,17 +11,31 @@ import {
 } from "@/components/ui/tabs";
 import { Download, Settings } from 'lucide-react';
 import SceneSelector from './SceneSelector';
+import CardSizeSelector from './CardSizeSelector';
 import ModelConfigDialog, { ModelConfig } from './ModelConfigDialog';
 import ModelConfigAlert from './ModelConfigAlert';
 import axios from 'axios';
 
+// 定义尺寸项的接口
+interface SizeItem {
+  名称: string;
+  描述: string;
+  宽度: string;
+  高度: string;
+}
+
+// 尺寸映射接口
+interface SizeMapping {
+  [key: string]: SizeItem;
+}
+
 // 提示词类型定义
 interface Prompt {
   role: string;
-  background?: string;  // 可选字段
-  task?: string;        // 可选字段
+  background?: string;
+  task?: string;
   requirements: {
-    [key: string]: string[];
+    [key: string]: string[] | SizeMapping | unknown;
   };
   用户输入?: {
     内容: string;
@@ -35,6 +49,7 @@ interface Style {
   design: string[];
   typography: string[];
   visual: string[];
+  size?: SizeMapping;
 }
 
 // 风格ID映射
@@ -85,6 +100,7 @@ const PosterGenerator = () => {
   const [configDialogOpen, setConfigDialogOpen] = useState(false);
   const configButtonRef = useRef<HTMLButtonElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
+  const [selectedCardSize, setSelectedCardSize] = useState('4:3');
   
   // 模型配置状态
   const [modelConfig, setModelConfig] = useState<ModelConfig>(() => {
@@ -151,10 +167,18 @@ const PosterGenerator = () => {
       }
       const bilibiliPrompt = await bilibiliResponse.json();
       
+      // 添加卡片提示词加载
+      const cardResponse = await fetch('/prompts/card.json');
+      if (!cardResponse.ok) {
+        throw new Error(`卡片提示词加载失败: ${cardResponse.status} ${cardResponse.statusText}`);
+      }
+      const cardPrompt = await cardResponse.json();
+      
       const promptDataObj = {
         xiaohongshu: xiaohongshuPrompt,
         wechat: wechatPrompt,
-        bilibili: bilibiliPrompt
+        bilibili: bilibiliPrompt,
+        card: cardPrompt // 新增卡片类型
       };
       
       console.log('成功加载提示词数据:', Object.keys(promptDataObj));
@@ -222,6 +246,11 @@ const PosterGenerator = () => {
       内容: text
     };
 
+    // 对于卡片场景，添加尺寸信息
+    if (scene === 'card') {
+      fullPrompt.用户输入.尺寸 = selectedCardSize;
+    }
+    
     // 添加风格要求
     if (!fullPrompt.requirements) {
       fullPrompt.requirements = {};
@@ -232,16 +261,45 @@ const PosterGenerator = () => {
     fullPrompt.requirements.设计风格 = mappedStyle.design;
     fullPrompt.requirements.排版风格 = mappedStyle.typography;
     fullPrompt.requirements.视觉元素 = mappedStyle.visual;
+    
+    // 进行类型检查和转换
+    if (mappedStyle.size) {
+      // 如果存在尺寸映射，直接赋值
+      fullPrompt.requirements.尺寸映射 = mappedStyle.size;
+    } else {
+      // 没有有效的尺寸映射，使用默认
+      fullPrompt.requirements.尺寸映射 = {
+        '1:1': { 名称: '方形', 描述: '通用', 宽度: '800px', 高度: '800px' },
+        '4:3': { 名称: '横版', 描述: '通用', 宽度: '1200px', 高度: '900px' },
+        '16:9': { 名称: '宽屏', 描述: '通用', 宽度: '1600px', 高度: '900px' },
+        '3:4': { 名称: '竖版', 描述: '通用', 宽度: '900px', 高度: '1200px' },
+        '9:16': { 名称: '长竖版', 描述: '通用', 宽度: '900px', 高度: '1600px' }
+      };
+    }
 
     // 构建提示词，直接使用role字段内容
     const rolePrompt = fullPrompt.role || '';
 
     // 构建基本要求部分
     const basicRequirements = Object.entries(fullPrompt.requirements)
-      .filter(([key]) => key !== '设计风格' && key !== '排版风格' && key !== '视觉元素')
-      .map(([key, value]) => `${key}：\n${value.map(item => `- ${item}`).join('\n')}`)
+      .filter(([key]) => key !== '设计风格' && key !== '排版风格' && key !== '视觉元素' && key !== '尺寸映射')
+      .map(([key, value]) => {
+        // 增加类型检查，确保value是数组才调用map
+        if (Array.isArray(value)) {
+          return `${key}：\n${value.map(item => `- ${item}`).join('\n')}`;
+        }
+        return `${key}：\n- 未定义`;
+      })
       .join('\n\n');
 
+    // 确保排版风格数组中包含不要文字堆叠的要求
+    const typographyRequirements = [...(fullPrompt.requirements.排版风格 as string[])];
+    // 检查是否已经包含了关于文字堆叠的要求
+    const hasStackingRequirement = typographyRequirements.some(item => item.includes('文字堆叠'));
+    if (!hasStackingRequirement) {
+      typographyRequirements.push('避免文字堆叠：除非为了特殊效果，否则不要让文字相互重叠，确保可读性');
+    }
+    
     // 最终提示词
     const finalPrompt = `${rolePrompt}
 
@@ -250,16 +308,21 @@ ${basicRequirements}
 
 风格要求：${mappedStyle.name}
 设计风格：
-${fullPrompt.requirements.设计风格.map(item => `- ${item}`).join('\n')}
+${(fullPrompt.requirements.设计风格 as string[]).map(item => `- ${item}`).join('\n')}
 
 排版风格：
-${fullPrompt.requirements.排版风格.map(item => `- ${item}`).join('\n')}
+${typographyRequirements.map(item => `- ${item}`).join('\n')}
 
 视觉元素：
-${fullPrompt.requirements.视觉元素.map(item => `- ${item}`).join('\n')}
+${(fullPrompt.requirements.视觉元素 as string[]).map(item => `- ${item}`).join('\n')}
+
+${scene === 'card' && fullPrompt.requirements.尺寸映射 && (fullPrompt.requirements.尺寸映射 as SizeMapping)[selectedCardSize] ? 
+  `尺寸要求：${(fullPrompt.requirements.尺寸映射 as SizeMapping)[selectedCardSize].名称 || ''}，${(fullPrompt.requirements.尺寸映射 as SizeMapping)[selectedCardSize].描述 || ''}，${(fullPrompt.requirements.尺寸映射 as SizeMapping)[selectedCardSize].宽度 || ''} x ${(fullPrompt.requirements.尺寸映射 as SizeMapping)[selectedCardSize].高度 || ''}` 
+  : scene === 'card' ? `尺寸要求：${selectedCardSize}比例` : ''}
 
 用户输入内容：
 ${fullPrompt.用户输入.内容}
+${scene === 'card' ? `\n选择尺寸：${selectedCardSize}` : ''}
 
 请生成一个HTML和内联CSS样式的海报，生成的HTML应该可以直接渲染为一个精美的海报。只返回HTML代码，不要有任何解释或其他文本, 不要有保存或下载按钮。
 `;
@@ -601,7 +664,7 @@ ${fullPrompt.用户输入.内容}
         loadingIndicator.style.zIndex = '1000';
         loadingIndicator.innerHTML = `
           <div style="width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid #3498db; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-          <div style="margin-top: 20px; font-size: 18px; color: white;">1Cool正在帮你变好看，请稍等...✨</div>
+          <div style="margin-top: 20px; font-size: 18px; color: white;">1Cool正在帮你变好看，请不要离开...✨</div>
           <div style="margin-top: 10px; font-size: 14px; color: #cccccc;">不满意？别担心，就像抽盲盒一样，多试几次总会遇到"隐藏款"！😎</div>
           <style>
             @keyframes spin {
@@ -814,6 +877,30 @@ ${fullPrompt.用户输入.内容}
                       height = Math.round(width / 1.6);
                     }
                   }
+                } else if (scene === 'card') {
+                  // 卡片比例根据selectedCardSize来确定
+                  console.log(`应用卡片尺寸比例 ${selectedCardSize}`);
+                  let ratio = 4/3; // 默认4:3比例
+                  
+                  if (selectedCardSize === '1:1') {
+                    ratio = 1;
+                  } else if (selectedCardSize === '4:3') {
+                    ratio = 4/3;
+                  } else if (selectedCardSize === '16:9') {
+                    ratio = 16/9;
+                  } else if (selectedCardSize === '3:4') {
+                    ratio = 3/4;
+                  } else if (selectedCardSize === '9:16') {
+                    ratio = 9/16;
+                  }
+                  
+                  if (Math.abs(width / height - ratio) > 0.1) {
+                    if (width / height > ratio) {
+                      width = Math.round(height * ratio);
+                    } else {
+                      height = Math.round(width / ratio);
+                    }
+                  }
                 }
               } else {
                 console.log('使用原始HTML设定的尺寸比例');
@@ -1010,7 +1097,7 @@ ${fullPrompt.用户输入.内容}
       background-color: white;
       ${scene === 'xiaohongshu' ? 'width: 600px; height: 800px;' : 
         scene === 'wechat' ? 'width: 1200px; height: 358px;' : 
-        scene === 'bilibili' ? 'width: 800px; height: 500px;' : ''}
+        scene === 'bilibili' ? 'width: 800px; height: 500px;' : scene === 'card' ? 'width: 800px; height: 600px;' : ''}
     }
     /* 确保Font Awesome图标正确显示 */
     .fas, .far, .fab {
@@ -1053,6 +1140,7 @@ ${fullPrompt.用户输入.内容}
       { id: 'xiaohongshu', name: '小红书', description: '时尚生活分享平台' },
       { id: 'wechat', name: '微信', description: '内容创作与推广' },
       { id: 'bilibili', name: 'B站', description: '视频内容创作' },
+      { id: 'card', name: '卡片', description: '多场景内容卡片' }, // 新增卡片类型
     ];
   }, []);
 
@@ -1187,6 +1275,8 @@ ${fullPrompt.用户输入.内容}
         iframeContainer.classList.add('wechat-iframe-container');
       } else if (scene === 'bilibili' && isCompleteHtml) {
         iframeContainer.classList.add('bilibili-iframe-container');
+      } else if (scene === 'card' && isCompleteHtml) {
+        iframeContainer.classList.add('card-iframe-container');
       }
       
       // 将容器添加到画布元素
@@ -1263,6 +1353,12 @@ ${fullPrompt.用户输入.内容}
                   .poster-container {
                     width: 800px;
                     height: 500px; /* 16:10 比例 */
+                    overflow: hidden;
+                  }
+                ` : scene === 'card' ? `
+                  .poster-container {
+                    width: 800px;
+                    height: 600px; /* 4:3 默认比例，可根据selectedCardSize调整 */
                     overflow: hidden;
                   }
                 ` : ''}
@@ -1460,6 +1556,9 @@ ${fullPrompt.用户输入.内容}
           } else if (scene === 'bilibili') {
             // 添加特殊处理，保证B站场景能够正确显示
             adjustBilibiliContainer();
+          } else if (scene === 'card') {
+            // 添加特殊处理，保证卡片场景能够正确显示
+            adjustCardContainer();
           }
         }
         
@@ -1596,6 +1695,88 @@ ${fullPrompt.用户输入.内容}
             iframe.style.height = `${Math.round(containerWidth / 1.6)}px`;
           }
         }
+
+        // 专门处理卡片场景的辅助函数
+        function adjustCardContainer() {
+          if (!iframe.contentDocument) return;
+          
+          // 添加卡片场景特殊布局调整
+          console.log('应用卡片场景特殊布局调整');
+          
+          // 移除所有可能存在的卡片尺寸类
+          iframeContainer.classList.remove('card-1-1', 'card-4-3', 'card-16-9', 'card-3-4', 'card-9-16');
+          
+          // 根据选定的尺寸添加相应的类
+          iframeContainer.classList.add(`card-${selectedCardSize.replace(':', '-')}`);
+          
+          // 查找主容器
+          const mainContainer = iframe.contentDocument.querySelector('.card-container, .poster-container');
+          if (mainContainer) {
+            console.log('找到卡片容器，应用卡片比例');
+            
+            // 计算比例
+            let ratioWidth = 4;
+            let ratioHeight = 3;
+            
+            // 根据选择的尺寸设置正确的比例
+            if (selectedCardSize === '1:1') {
+              ratioWidth = 1;
+              ratioHeight = 1;
+            } else if (selectedCardSize === '4:3') {
+              ratioWidth = 4;
+              ratioHeight = 3;
+            } else if (selectedCardSize === '16:9') {
+              ratioWidth = 16;
+              ratioHeight = 9;
+            } else if (selectedCardSize === '3:4') {
+              ratioWidth = 3;
+              ratioHeight = 4;
+            } else if (selectedCardSize === '9:16') {
+              ratioWidth = 9;
+              ratioHeight = 16;
+            }
+            
+            // 确保正确比例
+            const containerWidth = iframeContainer.clientWidth;
+            const expectedHeight = Math.round(containerWidth / ratioWidth * ratioHeight);
+            
+            // 设置容器高度
+            iframeContainer.style.height = `${expectedHeight}px`;
+            
+            // 使用计算后的尺寸，确保完整显示
+            (mainContainer as HTMLElement).style.width = '100%';
+            (mainContainer as HTMLElement).style.height = `${expectedHeight}px`;
+            
+            // 移除可能干扰比例的样式
+            iframe.contentDocument.body.style.padding = '0';
+            iframe.contentDocument.body.style.margin = '0';
+            iframe.contentDocument.body.style.overflow = 'hidden';
+            
+            console.log(`卡片场景容器调整为: ${containerWidth}x${expectedHeight}，比例 ${ratioWidth}:${ratioHeight}`);
+          } else {
+            console.log('未找到卡片容器，使用通用比例调整');
+            
+            // 计算比例
+            let ratio = 4/3; // 默认4:3比例
+            
+            if (selectedCardSize === '1:1') {
+              ratio = 1;
+            } else if (selectedCardSize === '4:3') {
+              ratio = 4/3;
+            } else if (selectedCardSize === '16:9') {
+              ratio = 16/9;
+            } else if (selectedCardSize === '3:4') {
+              ratio = 3/4;
+            } else if (selectedCardSize === '9:16') {
+              ratio = 9/16;
+            }
+            
+            // 确保iframe内容满足比例要求
+            const containerWidth = iframeContainer.clientWidth;
+            iframe.style.width = `${containerWidth}px`;
+            iframe.style.height = `${Math.round(containerWidth / ratio)}px`;
+          }
+        }
       };
       
       // 添加错误处理
@@ -1619,7 +1800,7 @@ ${fullPrompt.用户输入.内容}
             <p>iframe渲染失败，显示直接内容</p>
           </div>
           <div style="background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); max-width: 100%; overflow: auto; display: flex; justify-content: center; align-items: center;">
-            <div style="position: relative; ${scene === 'xiaohongshu' ? 'width: 375px; height: 500px;' : scene === 'wechat' ? 'width: 1200px; height: 358px;' : scene === 'bilibili' ? 'width: 800px; height: 500px;' : ''}">
+            <div style="position: relative; ${scene === 'xiaohongshu' ? 'width: 375px; height: 500px;' : scene === 'wechat' ? 'width: 1200px; height: 358px;' : scene === 'bilibili' ? 'width: 800px; height: 500px;' : scene === 'card' ? 'width: 800px; height: 600px;' : ''}">
               ${contentHtml}
             </div>
           </div>
@@ -1690,7 +1871,7 @@ ${fullPrompt.用户输入.内容}
         {isGenerating && (
           <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-slate-950 bg-opacity-90">
             <div className="animate-spin rounded-full h-20 w-20 border-t-2 border-b-2 border-cyan-500 mb-4"></div>
-            <p className="text-slate-300">1Cool正在帮你变好看，请稍等...✨</p>
+            <p className="text-slate-300">1Cool正在帮你变好看，请不要离开...✨</p>
             <p className="text-slate-400 text-sm mt-2">不满意？别担心，就像抽盲盒一样，多试几次总会遇到"隐藏款"！😎</p>
           </div>
         )}
@@ -1741,6 +1922,38 @@ ${fullPrompt.用户输入.内容}
               display: flex;
               justify-content: center;
               align-items: center;
+            }
+
+            /* 确保卡片场景保持正确的宽高比 */
+            .card-iframe-container {
+              width: 100%;
+              max-height: 100%;
+              overflow: hidden;
+              background-color: #f5f5f5;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+            }
+            
+            /* 对不同的卡片尺寸应用不同的宽高比 */
+            .card-1-1 {
+              aspect-ratio: 1/1;
+            }
+            
+            .card-4-3 {
+              aspect-ratio: 4/3;
+            }
+            
+            .card-16-9 {
+              aspect-ratio: 16/9;
+            }
+            
+            .card-3-4 {
+              aspect-ratio: 3/4;
+            }
+            
+            .card-9-16 {
+              aspect-ratio: 9/16;
             }
 
             /* 强制字体渲染 */
@@ -1845,6 +2058,20 @@ ${fullPrompt.用户输入.内容}
           />
         </div>
         
+        {/* Card Size Selector - 只在卡片场景下显示 */}
+        {scene === 'card' && (
+          <div className="glass-card rounded-xl p-3 md:p-4 mb-4">
+            <h3 className="text-lg font-medium mb-3 text-slate-200">
+              选择尺寸
+            </h3>
+            <CardSizeSelector 
+              selectedSize={selectedCardSize}
+              onSizeChange={setSelectedCardSize}
+              language={language}
+            />
+          </div>
+        )}
+        
         {/* Generate Button */}
         <Button 
           onClick={handleGenerate} 
@@ -1854,20 +2081,23 @@ ${fullPrompt.用户输入.内容}
           {isGenerating ? '生成中...' : '生成封面'}
         </Button>
         
-        {/* Poster preview */}
-        {renderMiddleColumn()}
-        
-        {/* Export button */}
-        <div className="flex justify-center mt-3">
-          <Button 
-            onClick={handleExport} 
-            disabled={!generatedHtml || isGenerating}
-            className="w-full sm:w-auto gap-1 bg-slate-800 hover:bg-slate-700 text-slate-200"
-          >
-            <Download className="w-4 h-4" />
-            导出
-          </Button>
+        {/* Poster preview - 添加relative定位以支持绝对定位的导出按钮 */}
+        <div className="relative">
+          {/* 导出按钮移至右上角 */}
+          <div className="absolute top-2 right-2 z-10">
+            <Button 
+              onClick={handleExport} 
+              disabled={!generatedHtml || isGenerating}
+              className="gap-1 bg-slate-800 hover:bg-slate-700 text-slate-200"
+            >
+              <Download className="w-4 h-4" />
+              导出
+            </Button>
+          </div>
+          {renderMiddleColumn()}
         </div>
+        
+        {/* 移除原导出按钮 */}
 
         {/* 配置提示对话框 */}
         <ModelConfigAlert 
@@ -1923,13 +2153,13 @@ ${fullPrompt.用户输入.内容}
       </div>
       
       {/* Middle column - Platform tabs and Canvas */}
-      <div className="w-2/4 flex flex-col p-4 bg-slate-950 h-full">
-       {/* Export button */}
-       <div className="flex justify-center mt-3">
+      <div className="w-2/4 flex flex-col p-4 bg-slate-950 h-full relative">
+        {/* 导出按钮移至右上角 */}
+        <div className="absolute top-4 right-4 z-10">
           <Button 
             onClick={handleExport} 
             disabled={!generatedHtml || isGenerating}
-            className="w-full sm:w-auto gap-1 bg-slate-800 hover:bg-slate-700 text-slate-200"
+            className="gap-1 bg-slate-800 hover:bg-slate-700 text-slate-200"
           >
             <Download className="w-4 h-4" />
             导出
@@ -1937,8 +2167,6 @@ ${fullPrompt.用户输入.内容}
         </div>
         {/* Poster preview */}
         {renderMiddleColumn()}
-        
-       
       </div>
       
       {/* Right column - Style selector and Generate button */}
@@ -1956,7 +2184,7 @@ ${fullPrompt.用户输入.内容}
         
         <div className="glass-card rounded-xl p-3 md:p-4 mb-4">
           <h3 className="text-lg font-medium mb-3 text-slate-200">
-            选择平台
+            选择场景
           </h3>
           <SceneSelector 
             selectedScene={scene}
@@ -1966,6 +2194,20 @@ ${fullPrompt.用户输入.内容}
             displayInline={true}
           />
         </div>
+        
+        {/* Card Size Selector - 只在卡片场景下显示 */}
+        {scene === 'card' && (
+          <div className="glass-card rounded-xl p-3 md:p-4 mb-4">
+            <h3 className="text-lg font-medium mb-3 text-slate-200">
+              选择尺寸
+            </h3>
+            <CardSizeSelector 
+              selectedSize={selectedCardSize}
+              onSizeChange={setSelectedCardSize}
+              language={language}
+            />
+          </div>
+        )}
         
         <Button 
           onClick={handleGenerate} 

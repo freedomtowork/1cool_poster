@@ -213,7 +213,7 @@ const PosterGenerator = () => {
     console.log('数据加载状态:', { hasPromptData, hasStyleData });
     
     if (hasPromptData && hasStyleData) {
-      console.log('所有数据加载完成，可以生成海报');
+      console.log('所有数据加载完成，可以生成');
     }
   }, [promptData, styleData]);
 
@@ -331,7 +331,7 @@ ${scene === 'card' ? `\n选择尺寸：${selectedCardSize}` : ''}
     return finalPrompt;
   };
 
-  // 调用API生成海报
+  // 调用API生成
   const generatePoster = async (prompt: string) => {
     try {
       // 检测提供商类型
@@ -604,7 +604,7 @@ ${scene === 'card' ? `\n选择尺寸：${selectedCardSize}` : ''}
 
   const handleGenerate = async () => {
     if (!text.trim()) {
-      console.log('请输入海报文本内容');
+      console.log('请输入卡片文字内容');
       return;
     }
 
@@ -682,9 +682,9 @@ ${scene === 'card' ? `\n选择尺寸：${selectedCardSize}` : ''}
         throw new Error('提示词构建失败');
       }
       
-      console.log('开始生成海报，模型:', modelConfig.model, '风格:', style, '场景:', scene);
+      console.log('开始生成，模型:', modelConfig.model, '风格:', style, '场景:', scene);
       
-      // 调用API生成海报
+      // 调用API生成
       let html = await generatePoster(prompt);
       console.log('获取到原始内容:', html ? '成功' : '失败', '长度:', html?.length);
       
@@ -743,7 +743,7 @@ ${scene === 'card' ? `\n选择尺寸：${selectedCardSize}` : ''}
       console.log('HTML内容已渲染到画布');
       
     } catch (error) {
-      console.error('生成海报失败:', error);
+      console.error('生成失败:', error);
       setGenerationError(error instanceof Error ? error.message : '未知错误');
       
       // 清除所有加载指示器
@@ -775,7 +775,7 @@ ${scene === 'card' ? `\n选择尺寸：${selectedCardSize}` : ''}
   };
 
   const handleExport = () => {
-    console.log('导出海报...');
+    console.log('导出...');
     
     if (canvasRef.current && generatedHtml) {
       // 检查是否可以使用html2canvas
@@ -989,7 +989,7 @@ ${scene === 'card' ? `\n选择尺寸：${selectedCardSize}` : ''}
                   
                   // 触发下载
                   link.click();
-                  console.log('海报导出成功');
+                  console.log('导出成功');
                   
                   // 恢复原始尺寸
                   exportElement!.style.width = originalWidth;
@@ -1044,7 +1044,7 @@ ${scene === 'card' ? `\n选择尺寸：${selectedCardSize}` : ''}
       }
     } else {
       console.warn('画布不存在或没有生成内容，无法导出');
-      alert('无内容可导出，请先生成海报');
+      alert('无内容可导出，请先生成');
     }
     
     // 帮助函数：导出HTML文件
@@ -2078,7 +2078,7 @@ ${scene === 'card' ? `\n选择尺寸：${selectedCardSize}` : ''}
           disabled={isGenerating} 
           className="w-full mb-4 bg-cyan-500 hover:bg-cyan-600 text-white"
         >
-          {isGenerating ? '生成中...' : '生成封面'}
+          {isGenerating ? '生成中...' : '生成卡片'}
         </Button>
         
         {/* Poster preview - 添加relative定位以支持绝对定位的导出按钮 */}
@@ -2214,7 +2214,7 @@ ${scene === 'card' ? `\n选择尺寸：${selectedCardSize}` : ''}
           disabled={isGenerating} 
           className="w-full mt-4 bg-cyan-500 hover:bg-cyan-600 text-white"
         >
-          {isGenerating ? '生成中...' : '生成封面'}
+          {isGenerating ? '生成中...' : '开始生成'}
         </Button>
       </div>
 
